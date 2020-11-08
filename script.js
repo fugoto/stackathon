@@ -15,8 +15,9 @@
  * =============================================================================
  */
 
-const status = document.getElementById('status');
-status.innerText = 'Loaded TensorFlow.js - version: ' + tf.version.tfjs;
+ console.log('hello')
+// const status = document.getElementById('status');
+// status.innerText = 'Loaded TensorFlow.js - version: ' + tf.version.tfjs;
 
 const video = document.getElementById('webcam');
 const liveView = document.getElementById('liveView');

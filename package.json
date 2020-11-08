@@ -16,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/fugoto/stackathon/issues"
   },
-  "homepage": "https://github.com/fugoto/stackathon#readme"
+  "homepage": "https://github.com/fugoto/stackathon#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "path": "^0.12.7"
+  }
 }
