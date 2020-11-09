@@ -4,23 +4,23 @@ const app = express()
 //require morgan|volleyball, path packages
 const morgan = require('morgan')
 //require db from /db
-const { db, Example } = require('./db')
-const routes = require('./routes')
+// const { db, Example } = require('./db')
+// const routes = require('./routes')
 const path = require('path')
 
 //use morgan|volleyball
 app.use(morgan('dev'))
 
 //use express.json()
-app.use(express.json())
-app.use(express.urlencoded( {extended: false} ))
+// app.use(express.json())
+// app.use(express.urlencoded( {extended: false} ))
 
 //use express.static() MAKE SURE THE PATH TO YOUR PUBLIC FOLDER IS RIGHT!
-app.use(express.static(path.join(__dirname,'./public')))
+app.use(express.static(path.join(__dirname,'./server/public')))
 
 //require in your routes and use them on your api path
-app.use('/', routes)
-app.use('/api',routes)
+// app.use('/', routes)
+// app.use('/api',routes)
 
 //404 handler
 app.use(function(req,res,next){
@@ -40,7 +40,7 @@ app.use(function(err,req,res,next){
 async function init(){
     try{
         console.log('syncing')
-        await db.sync()
+        // await db.sync()
         const PORT = process.env.PORT || 3000
         await app.listen(PORT, function(){
             console.log(`Listening at http://localhost:${PORT}`)
