@@ -101,6 +101,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var handtrackjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! handtrackjs */ "./node_modules/handtrackjs/src/index.js");
 
  // const handTrack = window.handTrack;
+//need to move togglevideo from index html to render below. also can put updatenote as a <p>. need to figure out what trackbutton is. next steps: to put prediction on state
+//sample prediction:
+// 0:
+// bbox: (4) [270.26879489421844, 94.34009146690369, 156.35127425193787, 149.49061799049377]
+// class: 0
+// score: 0.8765704035758972
 
 const modelParams = {
   flipHorizontal: true,
@@ -122,23 +128,29 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     super(props);
     this.state = {
       isVideo: false,
-      model: null
+      model: null,
+      message: "loading model..."
     };
+    this.img = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
     this.startVideo = this.startVideo.bind(this);
     this.toggleVideo = this.toggleVideo.bind(this);
     this.runDetection = this.runDetection.bind(this);
+    this.getCoordinates = this.getCoordinates.bind(this);
   }
 
   async startVideo() {
     const status = await handtrackjs__WEBPACK_IMPORTED_MODULE_1__["startVideo"](video);
 
     if (status) {
-      // updateNote.innerText = "Video started. Now tracking"
       this.setState({
-        isVideo: true
+        isVideo: true,
+        message: "Video started. Now tracking"
       }); // this.runDetection()
     } else {
-      console.log('please enable video'); // updateNote.innerText = "Please enable video"
+      console.log('please enable video');
+      this.setState({
+        message: "Please enable video"
+      });
     }
   }
 
@@ -146,14 +158,19 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     if (!this.state.isVideo) {
       // updateNote.innerText = "Starting video"
       this.startVideo();
+      this.setState({
+        message: "Starting video"
+      });
     } else {
       // updateNote.innerText = "Stopping video"
       handtrackjs__WEBPACK_IMPORTED_MODULE_1__["stopVideo"](video);
       this.setState({
-        isVideo: false
-      }); // updateNote.innerText = "Video stopped"
+        isVideo: false,
+        message: "Video stopped"
+      });
     }
-  }
+  } //predictions: [ x, y, width, height ]
+
 
   runDetection() {
     this.state.model.detect(video).then(predictions => {
@@ -164,22 +181,42 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
         window.requestAnimationFrame(this.runDetection);
       }
     });
-  } // Load the model.
+  }
+
+  getCoordinates() {
+    const img = this.img.current;
+    const rect = img.getBoundingClientRect();
+    console.log(rect.left, rect.top, rect.right, rect.bottom);
+  } // Load the model
 
 
   async componentDidMount() {
-    await this.startVideo();
+    this.startVideo();
     console.log('video loaded');
     const lmodel = await handtrackjs__WEBPACK_IMPORTED_MODULE_1__["load"](modelParams);
     console.log('model loaded');
     await this.setState({
-      model: lmodel
+      model: lmodel,
+      message: 'model loaded'
     });
     this.runDetection();
   }
 
   render() {
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "test"));
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+      onClick: this.toggleVideo,
+      id: "trackbutton",
+      className: "bx--btn bx--btn--secondary",
+      type: "button"
+    }, "Toggle Video"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      id: "updatenote",
+      className: "updatenote mt10"
+    }, this.state.message), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
+      ref: this.img,
+      src: "/images/duck.png"
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+      onClick: this.getCoordinates
+    }, "test"));
   }
 
 }

@@ -29,15 +29,16 @@ export default class App extends React.Component {
 			model: null,
 			message: "loading model...",
 		}
+		this.img = React.createRef();
 		this.startVideo = this.startVideo.bind(this)
 		this.toggleVideo = this.toggleVideo.bind(this)
 		this.runDetection = this.runDetection.bind(this)
+		this.getCoordinates = this.getCoordinates.bind(this)
 	}
 
 	async startVideo() {
 		const status = await handTrack.startVideo(video)
 		if (status) {
-			// updateNote.innerText = "Video started. Now tracking"
 			this.setState({ isVideo: true, message: "Video started. Now tracking" })
 			// this.runDetection()
 		} else {
@@ -55,10 +56,9 @@ export default class App extends React.Component {
 			// updateNote.innerText = "Stopping video"
 			handTrack.stopVideo(video)
 			this.setState({ isVideo: false, message: "Video stopped" });
-			// updateNote.innerText = "Video stopped"
 		}
 	}
-
+//predictions: [ x, y, width, height ]
 	runDetection() {
 		this.state.model.detect(video).then(predictions => {
 			console.log("Predictions: ", predictions);
@@ -68,9 +68,14 @@ export default class App extends React.Component {
 			}
 		});
 	}
-// Load the model.
+	getCoordinates() {
+		const img = this.img.current;
+		const rect = img.getBoundingClientRect();
+		console.log(rect.left, rect.top, rect.right, rect.bottom);
+	}
+// Load the model
 	async componentDidMount(){
-		await this.startVideo();
+		this.startVideo();
 		console.log('video loaded')
 		const lmodel = await handTrack.load(modelParams)
 		console.log('model loaded')
@@ -81,11 +86,12 @@ export default class App extends React.Component {
 	render() {
 		return(
 			<>
-			<h1>test</h1>
-			<button onclick={toggleVideo()} id="trackbutton" className="bx--btn bx--btn--secondary" type="button">
+			<button onClick={this.toggleVideo} id="trackbutton" className="bx--btn bx--btn--secondary" type="button">
       		Toggle Video
     		</button>
 			<div id="updatenote" className="updatenote mt10">{this.state.message}</div>
+			<img ref={this.img} src='/images/duck.png'></img>
+			<button onClick={this.getCoordinates}>test</button>
 		  </>
 		)
 	}
