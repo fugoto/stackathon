@@ -27,6 +27,7 @@ export default class App extends React.Component {
 		this.state = {
 			isVideo: false,
 			model: null,
+			message: "loading model...",
 		}
 		this.startVideo = this.startVideo.bind(this)
 		this.toggleVideo = this.toggleVideo.bind(this)
@@ -37,22 +38,23 @@ export default class App extends React.Component {
 		const status = await handTrack.startVideo(video)
 		if (status) {
 			// updateNote.innerText = "Video started. Now tracking"
-			this.setState({ isVideo: true })
+			this.setState({ isVideo: true, message: "Video started. Now tracking" })
 			// this.runDetection()
 		} else {
 			console.log('please enable video')
-			// updateNote.innerText = "Please enable video"
+			this.setState({ message: "Please enable video" })
 		}
-		};
+	};
 
 	toggleVideo() {
 		if (!this.state.isVideo) {
 			// updateNote.innerText = "Starting video"
 			this.startVideo();
+			this.setState({ message: "Starting video" })
 		} else {
 			// updateNote.innerText = "Stopping video"
 			handTrack.stopVideo(video)
-			this.setState({ isVideo: false });
+			this.setState({ isVideo: false, message: "Video stopped" });
 			// updateNote.innerText = "Video stopped"
 		}
 	}
@@ -72,7 +74,7 @@ export default class App extends React.Component {
 		console.log('video loaded')
 		const lmodel = await handTrack.load(modelParams)
 		console.log('model loaded')
-		await this.setState({ model: lmodel })
+		await this.setState({ model: lmodel, message: 'model loaded' })
 		this.runDetection();
 	}
 
@@ -80,6 +82,10 @@ export default class App extends React.Component {
 		return(
 			<>
 			<h1>test</h1>
+			<button onclick={toggleVideo()} id="trackbutton" className="bx--btn bx--btn--secondary" type="button">
+      		Toggle Video
+    		</button>
+			<div id="updatenote" className="updatenote mt10">{this.state.message}</div>
 		  </>
 		)
 	}
