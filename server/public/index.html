@@ -1,34 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Multiple object detection using pre trained model in TensorFlow.js</title>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Import the webpage's stylesheet -->
-    <link rel="stylesheet" href="style.css">
-  </head>  
-  <body>
-    <h1>Multiple object detection using pre trained model in TensorFlow.js</h1>
 
-    <p>Wait for the model to load before clicking the button to enable the webcam - at which point it will become visible to use.</p>
-    
-    <section id="demos" class="invisible">
+<head>
 
-      <p>Hold some objects up close to your webcam to get a real-time classification! When ready click "enable webcam" below and accept access to the webcam when the browser asks (check the top left of your window)</p>
-      
-      <div id="liveView" class="camView">
-        <button id="webcamButton">Enable Webcam</button>
-        <video id="webcam" autoplay width="640" height="480"></video>
-      </div>
-    </section>
+  <meta charset="UTF-8">
+  <title>Handtrack.js : A library for prototyping realtime handtracking in the browser. </title>
+  <link rel="stylesheet" href="https://unpkg.com/carbon-components@latest/css/carbon-components.css" />
+  <link rel="stylesheet" href="track.css">
+</head>
 
-    <!-- Import TensorFlow.js library -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js" type="text/javascript"></script>
-    <!-- Load the coco-ssd model to use to recognize things in images -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
-    
-    <!-- Import the page's JavaScript to do some stuff -->
-    <script src="/script.js" defer></script>
-  </body>
+<body class="bx--body p20">
+  <!-- <img id="img" src="hand.jpg"/>  -->
+  <div class="p20">
+    Handtrack.js allows you prototype handtracking interactions in the browser in 10 lines of code.
+  </div>
+  <div class="mb10">
+    <button onclick="toggleVideo()" id="trackbutton" class="bx--btn bx--btn--secondary" type="button">
+      Toggle Video
+    </button>
+    <div id="updatenote" class="updatenote mt10"> loading model ..</div>
+  </div>
+  <video class="videobox canvasbox" autoplay="autoplay" id="myvideo"></video>
+
+  <canvas id="canvas" class="border canvasbox"></canvas>
+
+  <script src="https://unpkg.com/carbon-components@latest/scripts/carbon-components.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/handtrackjs/dist/handtrack.min.js"> </script>
+  <script src="/server/track.js"></script>
+</body>
+
 </html>

@@ -19,6 +19,7 @@
   "homepage": "https://github.com/fugoto/stackathon#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "handtrackjs": "0.0.13",
     "path": "^0.12.7"
   }
 }
