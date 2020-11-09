@@ -8,14 +8,25 @@
   <!-- <link rel="stylesheet" href="https://unpkg.com/carbon-components@latest/css/carbon-components.css" /> -->
   <link rel="stylesheet" href="/style.css">
   <!-- <script src="https://unpkg.com/carbon-components@latest/scripts/carbon-components.js"></script> -->
-  <script src="https://cdn.jsdelivr.net/npm/handtrackjs/dist/handtrack.min.js"> </script>
   <script src='/bundle.js' defer></script>
-  <!-- <script src="/server/track.js"></script> -->
 </head>
 
 <body class="bx--body p20">
   <h1>Handtrack</h1>
+  <div class="p20">
+    Handtrack.js allows you prototype handtracking interactions in the browser in 10 lines of code.
+    </div>
+    <div class="mb10">
+    <button onclick="toggleVideo()" id="trackbutton" class="bx--btn bx--btn--secondary" type="button">
+      Toggle Video
+    </button>
+    <div id="updatenote" class="updatenote mt10"> loading model ..</div>
+    </div>
+    <video class="videobox canvasbox" autoplay="autoplay" id="myvideo" src="" width="450px" height="338px"></video>
+    <canvas id="canvas" class="border canvasbox"></canvas>
   <div id='app'></div>
+  <script src="https://cdn.jsdelivr.net/npm/handtrackjs/dist/handtrack.min.js"> </script>
+  <script src="/track.js"></script>
 </body>
 
 </html>

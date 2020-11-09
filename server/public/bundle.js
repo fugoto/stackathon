@@ -112,36 +112,34 @@ const modelParams = {
   scoreThreshold: 0.6 // confidence threshold for predictions.
 
 };
+const video = document.getElementById("myvideo");
+const canvas = document.getElementById("canvas");
+const context = canvas.getContext("2d");
+let trackButton = document.getElementById("trackbutton");
+let updateNote = document.getElementById("updatenote");
 class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       isVideo: false,
       model: null
     };
-    this.video = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
-    this.canvas = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
-    this.context = canvas.getContext("2d");
-    this.trackButton = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
-    this.updateNote = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
     this.startVideo = this.startVideo.bind(this);
     this.toggleVideo = this.toggleVideo.bind(this);
+    this.runDetection = this.runDetection.bind(this);
   }
 
-  startVideo() {
-    handtrackjs__WEBPACK_IMPORTED_MODULE_1__["startVideo"](this.video).then(function (status) {
-      console.log("video started", status);
+  async startVideo() {
+    const status = await handtrackjs__WEBPACK_IMPORTED_MODULE_1__["startVideo"](video);
 
-      if (status) {
-        // updateNote.innerText = "Video started. Now tracking"
-        this.setState({
-          isVideo: true
-        });
-        this.runDetection();
-      } else {
-        console.log('please enable video'); // updateNote.innerText = "Please enable video"
-      }
-    });
+    if (status) {
+      // updateNote.innerText = "Video started. Now tracking"
+      this.setState({
+        isVideo: true
+      }); // this.runDetection()
+    } else {
+      console.log('please enable video'); // updateNote.innerText = "Please enable video"
+    }
   }
 
   toggleVideo() {
@@ -158,52 +156,30 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
   }
 
   runDetection() {
-    this.state.model.detect(this.video).then(predictions => {
+    this.state.model.detect(video).then(predictions => {
       console.log("Predictions: ", predictions);
-      this.state.model.renderPredictions(predictions, this.canvas, this.context, this.video);
+      this.state.model.renderPredictions(predictions, canvas, context, video);
 
       if (this.state.isVideo) {
-        requestAnimationFrame(this.runDetection);
+        window.requestAnimationFrame(this.runDetection);
       }
     });
   } // Load the model.
 
 
-  componentDidMount() {
-    handtrackjs__WEBPACK_IMPORTED_MODULE_1__["load"](modelParams).then(lmodel => {
-      // detect objects in the image.
-      this.setState({
-        model: lmodel
-      }); // updateNote.innerText = "Loaded Model!"
-      // this.trackButton.disabled = false
+  async componentDidMount() {
+    await this.startVideo();
+    console.log('video loaded');
+    const lmodel = await handtrackjs__WEBPACK_IMPORTED_MODULE_1__["load"](modelParams);
+    console.log('model loaded');
+    await this.setState({
+      model: lmodel
     });
+    this.runDetection();
   }
 
   render() {
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "test"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "p20"
-    }, "Handtrack.js allows you prototype handtracking interactions in the browser in 10 lines of code."), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "mb10"
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
-      ref: this.trackButton,
-      onclick: "toggleVideo()",
-      id: "trackbutton",
-      className: "bx--btn bx--btn--secondary",
-      type: "button"
-    }, "Toggle Video"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      ref: this.updateNote,
-      id: "updatenote",
-      className: "updatenote mt10"
-    }, " loading model ..")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("video", {
-      ref: this.video,
-      className: "videobox canvasbox",
-      autoplay: "autoplay",
-      id: "myvideo"
-    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("canvas", {
-      ref: this.canvas,
-      id: "canvas",
-      className: "border canvasbox"
-    }));
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "test"));
   }
 
 }
