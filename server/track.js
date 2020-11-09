@@ -1,4 +1,4 @@
-import * as handTrack from 'handtrackjs';
+// import * as handTrack from 'handtrackjs';
 
 // const img = document.getElementById('img');
 
