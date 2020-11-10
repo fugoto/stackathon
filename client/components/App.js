@@ -1,5 +1,6 @@
 import React from "react";
 import * as handTrack from 'handtrackjs';
+// import '../server/public/style.scss'
 // const handTrack = window.handTrack;
 
 // next steps: to put prediction on state
@@ -128,19 +129,18 @@ export default class App extends React.Component {
 		return(
 			<>
 			<div ref={this.screen} id='screen'>
-			{/* <div class="title">Duck Hunt!</div>
-				<div class="score">Score: </div>
-				<div class="duck left"  style="left: 100px"></div>
-					<div class="duck left"  style="left: 200px"></div>
-					<div class="duck left"  style="left: 300px"></div>
-					<div class="duck left"  style="left: 400px"></div>
-					<div class="duck right" style="left: 500px"></div>
-					<div class="duck right" style="left: 600px"></div>
-					<div class="duck right" style="left: 700px"></div>
-					<div class="duck right" style="left: 800px"></div>
- */}
+			<div className="title">Duck Hunt!</div>
+				<div className="score">Score: </div>
+				<div className="duck left"  style={{left: 100 + 'px'}}></div>
+				<div className="duck left"  style={{left: 200 + 'px'}}></div>
+				<div className="duck left"  style={{left: 300 + 'px'}}></div>
+				<div className="duck left"  style={{left: 400 + 'px'}}></div>
+				<div className="duck left"  style={{left: 500 + 'px'}}></div>
+				<div className="duck left"  style={{left: 600 + 'px'}}></div>
+				<div className="duck left"  style={{left: 700 + 'px'}}></div>
+				<div className="duck left"  style={{left: 800 + 'px'}}></div>
 
-  				<img ref={this.img} src='/images/duck.png'></img>
+  				{/* <img ref={this.img} src='/images/duck.png'></img> */}
 				<button onClick={this.toggleVideo} id="trackbutton" className="bx--btn bx--btn--secondary" type="button">
       			Toggle Video
    		 		</button>

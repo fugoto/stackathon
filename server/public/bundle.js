@@ -100,7 +100,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var handtrackjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! handtrackjs */ "./node_modules/handtrackjs/src/index.js");
 
- // const handTrack = window.handTrack;
+ // import '../server/public/style.scss'
+// const handTrack = window.handTrack;
 // next steps: to put prediction on state
 //sample prediction:
 // 0:
@@ -246,9 +247,50 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       ref: this.screen,
       id: "screen"
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
-      ref: this.img,
-      src: "/images/duck.png"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "title"
+    }, "Duck Hunt!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "score"
+    }, "Score: "), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "duck left",
+      style: {
+        left: 100 + 'px'
+      }
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "duck left",
+      style: {
+        left: 200 + 'px'
+      }
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "duck left",
+      style: {
+        left: 300 + 'px'
+      }
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "duck left",
+      style: {
+        left: 400 + 'px'
+      }
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "duck left",
+      style: {
+        left: 500 + 'px'
+      }
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "duck left",
+      style: {
+        left: 600 + 'px'
+      }
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "duck left",
+      style: {
+        left: 700 + 'px'
+      }
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "duck left",
+      style: {
+        left: 800 + 'px'
+      }
     }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
       onClick: this.toggleVideo,
       id: "trackbutton",
@@ -88990,14 +89032,28 @@ module.exports = function(module) {
 
 /***/ }),
 
+/***/ "./server/public/style.scss":
+/*!**********************************!*\
+  !*** ./server/public/style.scss ***!
+  \**********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "server/public/style.min.css");
+
+/***/ }),
+
 /***/ 0:
-/*!*******************************!*\
-  !*** multi ./client/index.js ***!
-  \*******************************/
+/*!**********************************************************!*\
+  !*** multi ./client/index.js ./server/public/style.scss ***!
+  \**********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! ./client/index.js */"./client/index.js");
+__webpack_require__(/*! ./client/index.js */"./client/index.js");
+module.exports = __webpack_require__(/*! ./server/public/style.scss */"./server/public/style.scss");
 
 
 /***/ }),
