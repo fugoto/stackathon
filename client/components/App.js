@@ -37,6 +37,8 @@ export default class App extends React.Component {
 		this.toggleVideo = this.toggleVideo.bind(this)
 		this.runDetection = this.runDetection.bind(this)
 		this.getCoordinates = this.getCoordinates.bind(this)
+		this.startGame = this.startGame.bind(this)
+
 	}
 
 	async startVideo() {
@@ -104,7 +106,16 @@ export default class App extends React.Component {
 		}
 	}
 // Load the model
-	async componentDidMount(){
+	// async componentDidMount(){
+	// 	this.startVideo();
+	// 	console.log('video loaded')
+	// 	const lmodel = await handTrack.load(modelParams)
+	// 	console.log('model loaded')
+	// 	await this.setState({ model: lmodel, message: 'model loaded' })
+	// 	this.runDetection();
+	// }
+
+	async startGame(){
 		this.startVideo();
 		console.log('video loaded')
 		const lmodel = await handTrack.load(modelParams)
@@ -117,10 +128,23 @@ export default class App extends React.Component {
 		return(
 			<>
 			<div ref={this.screen} id='screen'>
-				<img ref={this.img} src='/images/duck.png'></img>
+			{/* <div class="title">Duck Hunt!</div>
+				<div class="score">Score: </div>
+				<div class="duck left"  style="left: 100px"></div>
+					<div class="duck left"  style="left: 200px"></div>
+					<div class="duck left"  style="left: 300px"></div>
+					<div class="duck left"  style="left: 400px"></div>
+					<div class="duck right" style="left: 500px"></div>
+					<div class="duck right" style="left: 600px"></div>
+					<div class="duck right" style="left: 700px"></div>
+					<div class="duck right" style="left: 800px"></div>
+ */}
+
+  				<img ref={this.img} src='/images/duck.png'></img>
 				<button onClick={this.toggleVideo} id="trackbutton" className="bx--btn bx--btn--secondary" type="button">
       			Toggle Video
    		 		</button>
+					<button onClick={this.startGame}>Start Game</button>
 					<button onClick={this.getCoordinates}>test</button>
 			<div id="updatenote" className="updatenote mt10">{this.state.message}</div>
 			</div>

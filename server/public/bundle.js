@@ -139,6 +139,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     this.toggleVideo = this.toggleVideo.bind(this);
     this.runDetection = this.runDetection.bind(this);
     this.getCoordinates = this.getCoordinates.bind(this);
+    this.startGame = this.startGame.bind(this);
   }
 
   async startVideo() {
@@ -219,9 +220,17 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       img.style.display = "none";
     }
   } // Load the model
+  // async componentDidMount(){
+  // 	this.startVideo();
+  // 	console.log('video loaded')
+  // 	const lmodel = await handTrack.load(modelParams)
+  // 	console.log('model loaded')
+  // 	await this.setState({ model: lmodel, message: 'model loaded' })
+  // 	this.runDetection();
+  // }
 
 
-  async componentDidMount() {
+  async startGame() {
     this.startVideo();
     console.log('video loaded');
     const lmodel = await handtrackjs__WEBPACK_IMPORTED_MODULE_1__["load"](modelParams);
@@ -246,6 +255,8 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       className: "bx--btn bx--btn--secondary",
       type: "button"
     }, "Toggle Video"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+      onClick: this.startGame
+    }, "Start Game"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
       onClick: this.getCoordinates
     }, "test"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       id: "updatenote",
