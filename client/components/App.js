@@ -2,7 +2,7 @@ import React from "react";
 import * as handTrack from 'handtrackjs';
 // const handTrack = window.handTrack;
 
-//need to move togglevideo from index html to render below. also can put updatenote as a <p>. need to figure out what trackbutton is. next steps: to put prediction on state
+// next steps: to put prediction on state
 //sample prediction:
 // 0:
 // bbox: (4) [270.26879489421844, 94.34009146690369, 156.35127425193787, 149.49061799049377]
@@ -28,8 +28,11 @@ export default class App extends React.Component {
 			isVideo: false,
 			model: null,
 			message: "loading model...",
+			coordinates: [],
+			range: 100,
 		}
 		this.img = React.createRef();
+		this.screen = React.createRef();
 		this.startVideo = this.startVideo.bind(this)
 		this.toggleVideo = this.toggleVideo.bind(this)
 		this.runDetection = this.runDetection.bind(this)
@@ -61,8 +64,15 @@ export default class App extends React.Component {
 //predictions: [ x, y, width, height ]
 	runDetection() {
 		this.state.model.detect(video).then(predictions => {
-			console.log("Predictions: ", predictions);
+			// console.log("Predictions: ", predictions);
 			this.state.model.renderPredictions(predictions, canvas, context, video);
+			if(predictions[0]) {
+				const [ x, y, width, height ] = predictions[0].bbox
+				// console.log(x, y, width, height)
+				this.determineHit(x, y, width, height)
+			}
+			
+			// this.setState({coordinates: predictions.bbox})
 			if (this.state.isVideo) {
 				window.requestAnimationFrame(this.runDetection);
 			}
@@ -70,8 +80,28 @@ export default class App extends React.Component {
 	}
 	getCoordinates() {
 		const img = this.img.current;
-		const rect = img.getBoundingClientRect();
-		console.log(rect.left, rect.top, rect.right, rect.bottom);
+		const target = img.getBoundingClientRect();
+		// console.log(target.x, target.y, target.width, target.height);
+	}
+	//1160 490
+	// 640 480
+	determineHit(x, y, width, height) {
+		const widthAdjustment = this.screen.current.clientWidth / video.width
+		const heightAdjustment = this.screen.current.clientHeight / video.height
+		const xAdj = x * widthAdjustment
+		const yAdj = y * heightAdjustment
+		const widthAdj = width * widthAdjustment
+		const heightAdj = height * heightAdjustment
+		// console.log(x, xAdj, y, yAdj)
+		// console.log(this.screen.current.clientWidth, this.screen.current.clientHeight)
+		// console.log(video.width, video.height)
+		const img = this.img.current;
+		const target = img.getBoundingClientRect();
+		const range = this.state.range
+		if( xAdj <= target.x && (xAdj + widthAdj) >= (target.x + target.width) && yAdj <= target.y && (yAdj + heightAdj) >= target.y + target.height ) {
+			console.log('HIT')
+			img.src = ''
+		}
 	}
 // Load the model
 	async componentDidMount(){
@@ -86,12 +116,14 @@ export default class App extends React.Component {
 	render() {
 		return(
 			<>
-			<button onClick={this.toggleVideo} id="trackbutton" className="bx--btn bx--btn--secondary" type="button">
-      		Toggle Video
-    		</button>
+			<div ref={this.screen} id='screen'>
+				<img ref={this.img} src='/images/duck.png'></img>
+				<button onClick={this.toggleVideo} id="trackbutton" className="bx--btn bx--btn--secondary" type="button">
+      			Toggle Video
+   		 		</button>
+					<button onClick={this.getCoordinates}>test</button>
 			<div id="updatenote" className="updatenote mt10">{this.state.message}</div>
-			<img ref={this.img} src='/images/duck.png'></img>
-			<button onClick={this.getCoordinates}>test</button>
+			</div>
 		  </>
 		)
 	}
