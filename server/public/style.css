@@ -18,13 +18,11 @@ h1 {
 
 .canvasbox {
     border-radius: 3px;
-    margin-right: 10px;
-    width: 450px;
-    height: 338px;
+    width: 100vw;
+    height: 100vh;
     border-bottom: 3px solid #0063FF;
     box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 4px 10px 0 #00000030;
-  background: #333;
-
+    z-index: -1;
 }
 
 .mb10 {
@@ -40,5 +38,55 @@ h1 {
     background: rgb(245, 147, 20);
     color: white;
     display: inline;
+}
+
+#app {
+  position: absolute;
+  /* width: 100vh;
+  height: 100vw; */
+  /* background-color: gray; */
+  top: 0;
+  left: 0;
+  /* width: 960px;
+  height: 720px; */
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+}
+
+#frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#frame video {
+  /* position: absolute;
+  top: 0;
+  left: 0;
+  height: auto;
+  width: 100%; */
+  
+  object-fit: fill;
+  display: none;
+  background-color: gray;
+}
+
+img {
+  height: 100px;
+  width: 100px;
+}
+
+#screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  /* background-color: lightpink; */
 }
 
