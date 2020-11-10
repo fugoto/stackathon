@@ -25,6 +25,8 @@
   "dependencies": {
     "express": "^4.17.1",
     "handtrackjs": "0.0.13",
+    "jquery": "^3.5.1",
+    "jsdom": "^16.4.0",
     "morgan": "^1.10.0",
     "path": "^0.12.7",
     "react": "^17.0.1",

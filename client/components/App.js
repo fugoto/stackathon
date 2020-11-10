@@ -1,14 +1,6 @@
 import React from "react";
 import * as handTrack from 'handtrackjs';
-// import '../server/public/style.scss'
-// const handTrack = window.handTrack;
 
-// next steps: to put prediction on state
-//sample prediction:
-// 0:
-// bbox: (4) [270.26879489421844, 94.34009146690369, 156.35127425193787, 149.49061799049377]
-// class: 0
-// score: 0.8765704035758972
 const modelParams = {
     flipHorizontal: true,   // flip e.g for video  
     maxNumBoxes: 20,        // maximum number of boxes to detect
@@ -140,6 +132,7 @@ export default class App extends React.Component {
 				<div className="duck left"  style={{left: 700 + 'px'}}></div>
 				<div className="duck left"  style={{left: 800 + 'px'}}></div>
 
+				{/* <script src="/*uckHunt.js"></script> */}
   				{/* <img ref={this.img} src='/images/duck.png'></img> */}
 				<button onClick={this.toggleVideo} id="trackbutton" className="bx--btn bx--btn--secondary" type="button">
       			Toggle Video

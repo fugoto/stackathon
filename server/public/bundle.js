@@ -100,14 +100,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var handtrackjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! handtrackjs */ "./node_modules/handtrackjs/src/index.js");
 
- // import '../server/public/style.scss'
-// const handTrack = window.handTrack;
-// next steps: to put prediction on state
-//sample prediction:
-// 0:
-// bbox: (4) [270.26879489421844, 94.34009146690369, 156.35127425193787, 149.49061799049377]
-// class: 0
-// score: 0.8765704035758972
 
 const modelParams = {
   flipHorizontal: true,
