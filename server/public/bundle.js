@@ -195,8 +195,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
 
   getCoordinates() {
     const img = this.img.current;
-    const target = img.getBoundingClientRect();
-    console.log(target.x, target.y, target.width, target.height);
+    const target = img.getBoundingClientRect(); // console.log(target.x, target.y, target.width, target.height);
   } //1160 490
   // 640 480
 
@@ -207,17 +206,17 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     const xAdj = x * widthAdjustment;
     const yAdj = y * heightAdjustment;
     const widthAdj = width * widthAdjustment;
-    const heightAdj = height * heightAdjustment;
-    console.log(x, xAdj, y, yAdj);
-    console.log(this.screen.current.clientWidth, this.screen.current.clientHeight);
-    console.log(video.width, video.height);
+    const heightAdj = height * heightAdjustment; // console.log(x, xAdj, y, yAdj)
+    // console.log(this.screen.current.clientWidth, this.screen.current.clientHeight)
+    // console.log(video.width, video.height)
+
     const img = this.img.current;
     const target = img.getBoundingClientRect();
     const range = this.state.range;
 
     if (xAdj <= target.x && xAdj + widthAdj >= target.x + target.width && yAdj <= target.y && yAdj + heightAdj >= target.y + target.height) {
       console.log('HIT');
-      img.src = '';
+      img.style.display = "none";
     }
   } // Load the model
 

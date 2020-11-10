@@ -100,7 +100,7 @@ export default class App extends React.Component {
 		const range = this.state.range
 		if( xAdj <= target.x && (xAdj + widthAdj) >= (target.x + target.width) && yAdj <= target.y && (yAdj + heightAdj) >= target.y + target.height ) {
 			console.log('HIT')
-			img.src = ''
+			img.style.display="none"
 		}
 	}
 // Load the model
