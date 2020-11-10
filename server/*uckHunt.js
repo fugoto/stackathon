@@ -17,8 +17,8 @@
 console.log('Welcome to *uck Hunt!');
 
 // timing variables
-var lostDuckFadeOutTime = 300;
-var gameSpeed = 500;              // 2 fps
+const lostDuckFadeOutTime = 300;
+// var gameSpeed = 500;              // 2 fps
 
 function isAlive(duck) {
   return duck.hasClass('left') || duck.hasClass('right');
@@ -55,7 +55,7 @@ function updateDuck(duck) {
 }
 
 // update the score, duck positions, orientations, and state
-function step() {
+export default function step() {
 
   $('.duck').each(function (i, duck) {
     duck = $(duck);
@@ -86,6 +86,6 @@ function step() {
 //   setInterval(step, gameSpeed);
 // });
 
-$(function() {
+function startGame () {
   setInterval(step, gameSpeed);
-});
+}

@@ -1,5 +1,6 @@
 import React from "react";
 import * as handTrack from 'handtrackjs';
+import step from '../../server/*uckHunt'
 
 const modelParams = {
     flipHorizontal: true,   // flip e.g for video  
@@ -7,6 +8,9 @@ const modelParams = {
     iouThreshold: 0.5,      // ioU threshold for non-max suppression
     scoreThreshold: 0.6,    // confidence threshold for predictions.
 }
+
+const nTargets = 2 // later refactor on child component Options state
+const gameSpeed = 500 // later refactor on child component Options state
 
 const video = document.getElementById("myvideo");
 const canvas = document.getElementById("canvas");
@@ -23,6 +27,8 @@ export default class App extends React.Component {
 			message: "loading model...",
 			coordinates: [],
 			range: 100,
+			nTargets: nTargets,
+			gameSpeed: gameSpeed
 		}
 		this.img = React.createRef();
 		this.screen = React.createRef();
@@ -31,9 +37,7 @@ export default class App extends React.Component {
 		this.runDetection = this.runDetection.bind(this)
 		this.getCoordinates = this.getCoordinates.bind(this)
 		this.startGame = this.startGame.bind(this)
-
 	}
-
 	async startVideo() {
 		const status = await handTrack.startVideo(video)
 		if (status) {
@@ -44,7 +48,6 @@ export default class App extends React.Component {
 			this.setState({ message: "Please enable video" })
 		}
 	};
-
 	toggleVideo() {
 		if (!this.state.isVideo) {
 			// updateNote.innerText = "Starting video"
@@ -66,8 +69,6 @@ export default class App extends React.Component {
 				// console.log(x, y, width, height)
 				this.determineHit(x, y, width, height)
 			}
-			
-			// this.setState({coordinates: predictions.bbox})
 			if (this.state.isVideo) {
 				window.requestAnimationFrame(this.runDetection);
 			}
@@ -87,9 +88,6 @@ export default class App extends React.Component {
 		const yAdj = y * heightAdjustment
 		const widthAdj = width * widthAdjustment
 		const heightAdj = height * heightAdjustment
-		// console.log(x, xAdj, y, yAdj)
-		// console.log(this.screen.current.clientWidth, this.screen.current.clientHeight)
-		// console.log(video.width, video.height)
 		const img = this.img.current;
 		const target = img.getBoundingClientRect();
 		const range = this.state.range
@@ -98,16 +96,6 @@ export default class App extends React.Component {
 			img.style.display="none"
 		}
 	}
-// Load the model
-	// async componentDidMount(){
-	// 	this.startVideo();
-	// 	console.log('video loaded')
-	// 	const lmodel = await handTrack.load(modelParams)
-	// 	console.log('model loaded')
-	// 	await this.setState({ model: lmodel, message: 'model loaded' })
-	// 	this.runDetection();
-	// }
-
 	async startGame(){
 		this.startVideo();
 		console.log('video loaded')
@@ -115,6 +103,7 @@ export default class App extends React.Component {
 		console.log('model loaded')
 		await this.setState({ model: lmodel, message: 'model loaded' })
 		this.runDetection();
+		setInterval(step, this.state.gameSpeed);
 	}
 
 	render() {
@@ -124,16 +113,14 @@ export default class App extends React.Component {
 			<div className="title">Duck Hunt!</div>
 				<div className="score">Score: </div>
 				<div className="duck left"  style={{left: 100 + 'px'}}></div>
-				<div className="duck left"  style={{left: 200 + 'px'}}></div>
-				<div className="duck left"  style={{left: 300 + 'px'}}></div>
+				<div className="duck right"  style={{right: 200 + 'px'}}></div>
+				{/* <div className="duck left"  style={{left: 300 + 'px'}}></div>
 				<div className="duck left"  style={{left: 400 + 'px'}}></div>
 				<div className="duck left"  style={{left: 500 + 'px'}}></div>
 				<div className="duck left"  style={{left: 600 + 'px'}}></div>
 				<div className="duck left"  style={{left: 700 + 'px'}}></div>
-				<div className="duck left"  style={{left: 800 + 'px'}}></div>
+				<div className="duck left"  style={{left: 800 + 'px'}}></div> */}
 
-				{/* <script src="/*uckHunt.js"></script> */}
-  				{/* <img ref={this.img} src='/images/duck.png'></img> */}
 				<button onClick={this.toggleVideo} id="trackbutton" className="bx--btn bx--btn--secondary" type="button">
       			Toggle Video
    		 		</button>

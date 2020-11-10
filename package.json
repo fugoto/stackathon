@@ -22,6 +22,11 @@
     "url": "https://github.com/fugoto/stackathon/issues"
   },
   "homepage": "https://github.com/fugoto/stackathon#readme",
+  "eslintConfig": {
+    "globals": {
+      "$": false
+    }
+  },
   "dependencies": {
     "express": "^4.17.1",
     "handtrackjs": "0.0.13",
