@@ -113,6 +113,7 @@ const modelParams = {
   scoreThreshold: 0.6 // confidence threshold for predictions.
 
 }; // have a fist icon
+// win result comes too early, fix that
 // fix the video turn on delay  -maybe need await?
 // have better bird fly angles
 // set background image
@@ -193,7 +194,12 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       if (predictions[0]) {
         const [x, y, width, height] = predictions[0].bbox; // console.log(x, y, width, height)
 
-        this.determineHit(x, y, width, height);
+        const [xAdj, yAdj, widthAdj, heightAdj] = this.adjustPos(x, y, width, height);
+        $(".fist").animate({
+          left: xAdj,
+          top: yAdj
+        }, 100);
+        this.determineHit(xAdj, yAdj, widthAdj, heightAdj);
       }
 
       if (this.state.isVideo) {
@@ -209,13 +215,23 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
   // 640 480
 
 
-  determineHit(x, y, width, height) {
+  adjustPos(x, y, width, height) {
     const widthAdjustment = this.screen.current.clientWidth / video.width;
     const heightAdjustment = this.screen.current.clientHeight / video.height;
     const xAdj = x * widthAdjustment;
     const yAdj = y * heightAdjustment;
     const widthAdj = width * widthAdjustment;
     const heightAdj = height * heightAdjustment;
+    return [xAdj, yAdj, widthAdj, heightAdj];
+  }
+
+  determineHit(xAdj, yAdj, widthAdj, heightAdj) {
+    // const widthAdjustment = this.screen.current.clientWidth / video.width
+    // const heightAdjustment = this.screen.current.clientHeight / video.height
+    // const xAdj = x * widthAdjustment
+    // const yAdj = y * heightAdjustment
+    // const widthAdj = width * widthAdjustment
+    // const heightAdj = height * heightAdjustment
     const targets = document.querySelectorAll(".target");
     targets.forEach(target => {
       const targetPos = target.getBoundingClientRect();
@@ -297,7 +313,10 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       className: "title"
     }, "Duck Hunt!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "score"
-    }, "Score: ", this.state.score, " / ", this.state.nTargets), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    }, "Score: ", this.state.score, " / ", this.state.nTargets), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
+      className: "fist",
+      src: "/images/fist.png"
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       id: "targets",
       ref: this.targets
     }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, this.state.result, "!!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
@@ -307,9 +326,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       type: "button"
     }, "Toggle Video"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
       onClick: this.startGame
-    }, "Start Game"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
-      onClick: this.getCoordinates
-    }, "test"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    }, "Start Game"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       id: "updatenote",
       className: "updatenote mt10"
     }, this.state.message)));

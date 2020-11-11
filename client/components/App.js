@@ -9,11 +9,13 @@ const modelParams = {
     scoreThreshold: 0.6,    // confidence threshold for predictions.
 }
 // have a fist icon
+// win result comes too early, fix that. look at lose
 // fix the video turn on delay  -maybe need await?
 // have better bird fly angles
 // set background image
 // dictator heads
 // do dog
+// 2 fists
 const nTargets = 5 // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
 const gameSpeed = 500 // later refactor on child component Options state
 let model = null
@@ -38,6 +40,7 @@ export default class App extends React.Component {
 		}
 		this.targets = React.createRef();
 		this.screen = React.createRef();
+		this.fist = React.createRef();
 		this.startVideo = this.startVideo.bind(this)
 		this.toggleVideo = this.toggleVideo.bind(this)
 		this.runDetection = this.runDetection.bind(this)
@@ -73,7 +76,11 @@ export default class App extends React.Component {
 			if(predictions[0]) {
 				const [ x, y, width, height ] = predictions[0].bbox
 				// console.log(x, y, width, height)
-				this.determineHit(x, y, width, height)
+				const [xAdj, yAdj, widthAdj, heightAdj] = this.adjustPos(x, y, width, height)
+				$(".fist").animate({ 
+					left: (xAdj + widthAdj)/2, 
+					top: (yAdj + heightAdj)/2}, 100);
+				this.determineHit(xAdj, yAdj, widthAdj, heightAdj)
 			}
 			if (this.state.isVideo) {
 				window.requestAnimationFrame(this.runDetection);
@@ -86,13 +93,22 @@ export default class App extends React.Component {
 	}
 	//1160 490
 	// 640 480
-	determineHit(x, y, width, height) {
+	adjustPos(x, y, width, height){
 		const widthAdjustment = this.screen.current.clientWidth / video.width
 		const heightAdjustment = this.screen.current.clientHeight / video.height
 		const xAdj = x * widthAdjustment
 		const yAdj = y * heightAdjustment
 		const widthAdj = width * widthAdjustment
 		const heightAdj = height * heightAdjustment
+		return [xAdj, yAdj, widthAdj, heightAdj]
+	}
+	determineHit(xAdj, yAdj, widthAdj, heightAdj) {
+		// const widthAdjustment = this.screen.current.clientWidth / video.width
+		// const heightAdjustment = this.screen.current.clientHeight / video.height
+		// const xAdj = x * widthAdjustment
+		// const yAdj = y * heightAdjustment
+		// const widthAdj = width * widthAdjustment
+		// const heightAdj = height * heightAdjustment
 
 		const targets = document.querySelectorAll(".target");
 		targets.forEach(target => {
@@ -167,13 +183,14 @@ export default class App extends React.Component {
 			<div ref={this.screen} id='screen'>
 			<div className="title">Duck Hunt!</div>
 				<div className="score">Score: {this.state.score} / {this.state.nTargets}</div>
+				<img className="fist" src='/images/fist.png'></img>
 				<div id='targets' ref={this.targets}></div>
-				<h1>{this.state.result}!!</h1>
+				<h1>{this.state.result}</h1>
 				<button onClick={this.toggleVideo} id="trackbutton" className="bx--btn bx--btn--secondary" type="button">
       			Toggle Video
    		 		</button>
 				<button onClick={this.startGame}>Start Game</button>
-				<button onClick={this.getCoordinates}>test</button>
+				{/* <button onClick={this.getCoordinates}>test</button> */}
 				<div id="updatenote" className="updatenote mt10">{this.state.message}</div>
 			</div>
 		  </>
