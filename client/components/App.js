@@ -8,10 +8,11 @@ const modelParams = {
     iouThreshold: 0.5,      // ioU threshold for non-max suppression
     scoreThreshold: 0.6,    // confidence threshold for predictions.
 }
-// have a hand icon
+// have a fist icon
 // fix the video turn on delay  -maybe need await?
 // have better bird fly angles
 // set background image
+// dictator heads
 // do dog
 const nTargets = 5 // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
 const gameSpeed = 500 // later refactor on child component Options state

@@ -112,10 +112,11 @@ const modelParams = {
   // ioU threshold for non-max suppression
   scoreThreshold: 0.6 // confidence threshold for predictions.
 
-}; // have a hand icon
+}; // have a fist icon
 // fix the video turn on delay  -maybe need await?
 // have better bird fly angles
 // set background image
+// dictator heads
 // do dog
 
 const nTargets = 5; // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
@@ -259,7 +260,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       createdTargets++;
       console.log('created', createdTargets, 'total', nTargets);
 
-      if (createdTargets > nTargets) {
+      if (createdTargets >= nTargets) {
         clearInterval(createTargets);
         createdTargets = 0; // result
 
