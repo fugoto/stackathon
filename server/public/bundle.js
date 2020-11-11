@@ -133,7 +133,8 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       coordinates: [],
       range: 100,
       nTargets: nTargets,
-      gameSpeed: gameSpeed
+      gameSpeed: gameSpeed,
+      score: 0
     };
     this.targets = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
     this.screen = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
@@ -143,6 +144,8 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     this.getCoordinates = this.getCoordinates.bind(this);
     this.startGame = this.startGame.bind(this);
     this.addTarget = this.addTarget.bind(this);
+    this.determineHit = this.determineHit.bind(this);
+    this.incrementScore = this.incrementScore.bind(this);
   }
 
   async startVideo() {
@@ -209,14 +212,34 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     const xAdj = x * widthAdjustment;
     const yAdj = y * heightAdjustment;
     const widthAdj = width * widthAdjustment;
-    const heightAdj = height * heightAdjustment;
-    $('.target').each(function (i, target) {
+    const heightAdj = height * heightAdjustment; // $('.target').each(function(i, target) {
+    // 	const targetPos = target.getBoundingClientRect();
+    // 	if( xAdj <= targetPos.x && (xAdj + widthAdj) >= (targetPos.x + targetPos.width) && yAdj <= targetPos.y && (yAdj + heightAdj) >= (targetPos.y + targetPos.height) ) {
+    // 		console.log('HIT')
+    // 		target.style.display="none"
+    // 		// window.this.incrementScore();
+    // 		window.this.setState({score: this.state.score + 1})
+    // 	}		
+    // });
+
+    const targets = document.querySelectorAll(".target");
+    targets.forEach(target => {
       const targetPos = target.getBoundingClientRect();
 
       if (xAdj <= targetPos.x && xAdj + widthAdj >= targetPos.x + targetPos.width && yAdj <= targetPos.y && yAdj + heightAdj >= targetPos.y + targetPos.height) {
         console.log('HIT');
-        target.style.display = "none";
+        target.style.display = "none"; // window.this.incrementScore();
+
+        this.setState({
+          score: this.state.score + 1
+        });
       }
+    });
+  }
+
+  incrementScore() {
+    this.setState({
+      score: this.state.score + 1
     });
   }
 
@@ -230,14 +253,13 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
 
   async startGame() {
     this.startVideo();
-    console.log('video loaded');
     const lmodel = await handtrackjs__WEBPACK_IMPORTED_MODULE_1__["load"](modelParams);
     console.log('model loaded');
     await this.setState({
       model: lmodel,
       message: 'model loaded'
     });
-    this.runDetection(lmodel);
+    this.runDetection();
     setInterval(_server_uckHunt__WEBPACK_IMPORTED_MODULE_2__["default"], this.state.gameSpeed);
     setInterval(this.addTarget, 5000);
   }
@@ -250,7 +272,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       className: "title"
     }, "Duck Hunt!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "score"
-    }, "Score: "), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    }, "Score: ", this.state.score), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       id: "targets",
       ref: this.targets
     }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {

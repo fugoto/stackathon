@@ -28,7 +28,8 @@ export default class App extends React.Component {
 			coordinates: [],
 			range: 100,
 			nTargets: nTargets,
-			gameSpeed: gameSpeed
+			gameSpeed: gameSpeed,
+			score: 0,
 		}
 		this.targets = React.createRef();
 		this.screen = React.createRef();
@@ -38,6 +39,8 @@ export default class App extends React.Component {
 		this.getCoordinates = this.getCoordinates.bind(this)
 		this.startGame = this.startGame.bind(this)
 		this.addTarget = this.addTarget.bind(this)
+		this.determineHit = this.determineHit.bind(this)
+		this.incrementScore = this.incrementScore.bind(this)
 	}
 	async startVideo() {
 		const status = await handTrack.startVideo(video)
@@ -89,13 +92,28 @@ export default class App extends React.Component {
 		const widthAdj = width * widthAdjustment
 		const heightAdj = height * heightAdjustment
 
-		$('.target').each(function(i, target) {
+		// $('.target').each(function(i, target) {
+		// 	const targetPos = target.getBoundingClientRect();
+		// 	if( xAdj <= targetPos.x && (xAdj + widthAdj) >= (targetPos.x + targetPos.width) && yAdj <= targetPos.y && (yAdj + heightAdj) >= (targetPos.y + targetPos.height) ) {
+		// 		console.log('HIT')
+		// 		target.style.display="none"
+		// 		// window.this.incrementScore();
+		// 		window.this.setState({score: this.state.score + 1})
+		// 	}		
+		// });
+		const targets = document.querySelectorAll(".target");
+		targets.forEach(target => {
 			const targetPos = target.getBoundingClientRect();
-			if( xAdj <= targetPos.x && (xAdj + widthAdj) >= (targetPos.x + targetPos.width) && yAdj <= targetPos.y && (yAdj + heightAdj) >= targetPos.y + targetPos.height ) {
+			if( xAdj <= targetPos.x && (xAdj + widthAdj) >= (targetPos.x + targetPos.width) && yAdj <= targetPos.y && (yAdj + heightAdj) >= (targetPos.y + targetPos.height) ) {
 				console.log('HIT')
 				target.style.display="none"
-			}		
+				// window.this.incrementScore();
+				this.setState({score: this.state.score + 1})
+			}
 		});
+	}
+	incrementScore(){
+		this.setState({score: this.state.score + 1})
 	}
 	addTarget(){
 		const directions = ['left', 'right']
@@ -106,11 +124,10 @@ export default class App extends React.Component {
 		}
 	async startGame(){
 		this.startVideo();
-		console.log('video loaded')
 		const lmodel = await handTrack.load(modelParams)
 		console.log('model loaded')
 		await this.setState({ model: lmodel, message: 'model loaded' })
-		this.runDetection(lmodel);
+		this.runDetection();
 		setInterval(step, this.state.gameSpeed);
 		setInterval(this.addTarget, 5000)
 	}
@@ -119,17 +136,14 @@ export default class App extends React.Component {
 			<>
 			<div ref={this.screen} id='screen'>
 			<div className="title">Duck Hunt!</div>
-				<div className="score">Score: </div>
-				<div id='targets' ref={this.targets}>
-					{/* <div className="target left"  style={{left: 800 + 'px'}}></div>
-					<div className="target right"  style={{right: 800 + 'px'}}></div> */}
-				</div>
+				<div className="score">Score: {this.state.score}</div>
+				<div id='targets' ref={this.targets}></div>
 				<button onClick={this.toggleVideo} id="trackbutton" className="bx--btn bx--btn--secondary" type="button">
       			Toggle Video
    		 		</button>
-					<button onClick={this.startGame}>Start Game</button>
-					<button onClick={this.getCoordinates}>test</button>
-			<div id="updatenote" className="updatenote mt10">{this.state.message}</div>
+				<button onClick={this.startGame}>Start Game</button>
+				<button onClick={this.getCoordinates}>test</button>
+				<div id="updatenote" className="updatenote mt10">{this.state.message}</div>
 			</div>
 		  </>
 		)
