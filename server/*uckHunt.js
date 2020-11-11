@@ -17,38 +17,38 @@
 console.log('Welcome to *uck Hunt!');
 
 // timing variables
-const lostDuckFadeOutTime = 300;
+const lostTargetFadeOutTime = 300;
 // var gameSpeed = 500;              // 2 fps
 
-function isAlive(duck) {
-  return duck.hasClass('left') || duck.hasClass('right');
+function isAlive(target) {
+  return target.hasClass('left') || target.hasClass('right');
 }
 
-function updateDuck(duck) {
+function updateTarget(target) {
 
   // bounce left to right
-  if (duck.offset().left < 0) {
-    duck.removeClass('left').addClass('right');
+  if (target.offset().left < 0) {
+    target.removeClass('left').addClass('right');
   }
 
   // bounce right to left
-  if (duck.offset().left > $(document).width() - 200) {
-    duck.removeClass('right').addClass('left');
+  if (target.offset().left > $(document).width() - 200) {
+    target.removeClass('right').addClass('left');
   }
 
   // Set the vertical position of the duck.
   // Note that we set bottom equal to top to move the duck up exactly 1 duck
   // height and this is "smoothed" out by the CSS3 transition settings.
-  var newBottom = $(document).height() - duck.offset().top;
-  duck.css('bottom', newBottom);
+  var newBottom = $(document).height() - target.offset().top;
+  target.css('bottom', newBottom);
 
   // flap those wings
-  duck.toggleClass('flap');
+  target.toggleClass('flap');
 
   // if duck has escaped, fade it out and recycle it.
-  if (duck.offset().top < 0) {
-    duck.fadeOut(lostDuckFadeOutTime, function() {
-      duck.removeClass('left right');
+  if (target.offset().top < 0) {
+    target.fadeOut(lostTargetFadeOutTime, function() {
+      target.removeClass('left right');
       // TODO: recycle the duck
     });
   }
@@ -56,28 +56,27 @@ function updateDuck(duck) {
 
 // update the score, duck positions, orientations, and state
 export default function step() {
-
-  $('.duck').each(function (i, duck) {
-    duck = $(duck);
-    if (isAlive(duck)) {
-      updateDuck(duck);
+  $('.target').each(function (i, target) {
+    target = $(target);
+    if (isAlive(target)) {
+      updateTarget(target);
     }
     else {
-      console.log('Skipping lost or dead duck');
+      console.log('Skipping lost or dead target');
     }
-    console.log('duck: top=' + duck.offset().top + ', class=' + duck.attr('class'));
+    // console.log('target: top=' + target.offset().top + ', class=' + target.attr('class'));
   });
 
   // move each left facing duck a little further to the left
-  $('.duck.left').each(function (i, duck) {
-    duck = $(duck);
-    duck.css('left', duck.offset().left - 30);
+  $('.target.left').each(function (i, target) {
+    target = $(target);
+    target.css('left', target.offset().left - 30);
   });
 
   // move each right facing duck a little further to the right
-  $('.duck.right').each(function (i, duck) {
-    duck = $(duck);
-    duck.css('left', duck.offset().left + 30);
+  $('.target.right').each(function (i, target) {
+    target = $(target);
+    target.css('left', target.offset().left + 30);
   });
 }
 
@@ -86,6 +85,6 @@ export default function step() {
 //   setInterval(step, gameSpeed);
 // });
 
-function startGame () {
-  setInterval(step, gameSpeed);
-}
+// function startGame () {
+//   setInterval(step, gameSpeed);
+// }

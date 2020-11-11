@@ -8,8 +8,8 @@ const modelParams = {
     iouThreshold: 0.5,      // ioU threshold for non-max suppression
     scoreThreshold: 0.6,    // confidence threshold for predictions.
 }
-
-const nTargets = 2 // later refactor on child component Options state
+// have a hand icon
+const nTargets = 5 // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
 const gameSpeed = 500 // later refactor on child component Options state
 
 const video = document.getElementById("myvideo");
@@ -30,13 +30,14 @@ export default class App extends React.Component {
 			nTargets: nTargets,
 			gameSpeed: gameSpeed
 		}
-		this.img = React.createRef();
+		this.targets = React.createRef();
 		this.screen = React.createRef();
 		this.startVideo = this.startVideo.bind(this)
 		this.toggleVideo = this.toggleVideo.bind(this)
 		this.runDetection = this.runDetection.bind(this)
 		this.getCoordinates = this.getCoordinates.bind(this)
 		this.startGame = this.startGame.bind(this)
+		this.addTarget = this.addTarget.bind(this)
 	}
 	async startVideo() {
 		const status = await handTrack.startVideo(video)
@@ -75,9 +76,8 @@ export default class App extends React.Component {
 		});
 	}
 	getCoordinates() {
-		const img = this.img.current;
-		const target = img.getBoundingClientRect();
-		// console.log(target.x, target.y, target.width, target.height);
+		const target = this.targets.current.getBoundingClientRect();
+		console.log(target.x, target.y, target.width, target.height);
 	}
 	//1160 490
 	// 640 480
@@ -88,39 +88,42 @@ export default class App extends React.Component {
 		const yAdj = y * heightAdjustment
 		const widthAdj = width * widthAdjustment
 		const heightAdj = height * heightAdjustment
-		const img = this.img.current;
-		const target = img.getBoundingClientRect();
-		const range = this.state.range
-		if( xAdj <= target.x && (xAdj + widthAdj) >= (target.x + target.width) && yAdj <= target.y && (yAdj + heightAdj) >= target.y + target.height ) {
-			console.log('HIT')
-			img.style.display="none"
-		}
+
+		$('.target').each(function(i, target) {
+			const targetPos = target.getBoundingClientRect();
+			if( xAdj <= targetPos.x && (xAdj + widthAdj) >= (targetPos.x + targetPos.width) && yAdj <= targetPos.y && (yAdj + heightAdj) >= targetPos.y + targetPos.height ) {
+				console.log('HIT')
+				target.style.display="none"
+			}		
+		});
 	}
+	addTarget(){
+		const directions = ['left', 'right']
+		const targetDirection = directions[Math.floor(Math.random() * directions.length)]
+		const initialPos = Math.floor(this.screen.current.clientWidth * Math.random())
+		console.log(targetDirection, initialPos)
+		$('#targets').append(`<div class="target ${targetDirection}" style="${targetDirection}: ${initialPos}px"></div>`)
+		}
 	async startGame(){
 		this.startVideo();
 		console.log('video loaded')
 		const lmodel = await handTrack.load(modelParams)
 		console.log('model loaded')
 		await this.setState({ model: lmodel, message: 'model loaded' })
-		this.runDetection();
+		this.runDetection(lmodel);
 		setInterval(step, this.state.gameSpeed);
+		setInterval(this.addTarget, 5000)
 	}
-
 	render() {
 		return(
 			<>
 			<div ref={this.screen} id='screen'>
 			<div className="title">Duck Hunt!</div>
 				<div className="score">Score: </div>
-				<div className="duck left"  style={{left: 100 + 'px'}}></div>
-				<div className="duck right"  style={{right: 200 + 'px'}}></div>
-				{/* <div className="duck left"  style={{left: 300 + 'px'}}></div>
-				<div className="duck left"  style={{left: 400 + 'px'}}></div>
-				<div className="duck left"  style={{left: 500 + 'px'}}></div>
-				<div className="duck left"  style={{left: 600 + 'px'}}></div>
-				<div className="duck left"  style={{left: 700 + 'px'}}></div>
-				<div className="duck left"  style={{left: 800 + 'px'}}></div> */}
-
+				<div id='targets' ref={this.targets}>
+					{/* <div className="target left"  style={{left: 800 + 'px'}}></div>
+					<div className="target right"  style={{right: 800 + 'px'}}></div> */}
+				</div>
 				<button onClick={this.toggleVideo} id="trackbutton" className="bx--btn bx--btn--secondary" type="button">
       			Toggle Video
    		 		</button>

@@ -2,7 +2,7 @@
 node_modules/*
 
 # Compiled JS
-public/*.js
+server/public/*.js
 
 # NPM errors
 npm-debug.log
