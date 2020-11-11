@@ -9,8 +9,13 @@ const modelParams = {
     scoreThreshold: 0.6,    // confidence threshold for predictions.
 }
 // have a hand icon
+// fix the video turn on delay  -maybe need await?
+// have better bird fly angles
+// set background image
+// do dog
 const nTargets = 5 // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
 const gameSpeed = 500 // later refactor on child component Options state
+let model = null
 
 const video = document.getElementById("myvideo");
 const canvas = document.getElementById("canvas");
@@ -23,13 +28,14 @@ export default class App extends React.Component {
 		super(props)
 		this.state = {
 			isVideo: false,
-			model: null,
 			message: "loading model...",
 			coordinates: [],
 			range: 100,
 			nTargets: nTargets,
+			// createdTargets: 0,
 			gameSpeed: gameSpeed,
 			score: 0,
+			result: ''
 		}
 		this.targets = React.createRef();
 		this.screen = React.createRef();
@@ -40,13 +46,12 @@ export default class App extends React.Component {
 		this.startGame = this.startGame.bind(this)
 		this.addTarget = this.addTarget.bind(this)
 		this.determineHit = this.determineHit.bind(this)
-		this.incrementScore = this.incrementScore.bind(this)
+		// this.playGame = this.playGame.bind(this)
 	}
 	async startVideo() {
 		const status = await handTrack.startVideo(video)
 		if (status) {
 			this.setState({ isVideo: true, message: "Video started. Now tracking" })
-			// this.runDetection()
 		} else {
 			console.log('please enable video')
 			this.setState({ message: "Please enable video" })
@@ -54,20 +59,19 @@ export default class App extends React.Component {
 	};
 	toggleVideo() {
 		if (!this.state.isVideo) {
-			// updateNote.innerText = "Starting video"
 			this.startVideo();
 			this.setState({ message: "Starting video" })
 		} else {
-			// updateNote.innerText = "Stopping video"
 			handTrack.stopVideo(video)
 			this.setState({ isVideo: false, message: "Video stopped" });
 		}
 	}
 //predictions: [ x, y, width, height ]
 	runDetection() {
-		this.state.model.detect(video).then(predictions => {
+		model.detect(video).then(predictions => {
 			// console.log("Predictions: ", predictions);
-			this.state.model.renderPredictions(predictions, canvas, context, video);
+			model.renderPredictions(predictions, canvas, context, video);
+			// this.playGame();
 			if(predictions[0]) {
 				const [ x, y, width, height ] = predictions[0].bbox
 				// console.log(x, y, width, height)
@@ -92,28 +96,15 @@ export default class App extends React.Component {
 		const widthAdj = width * widthAdjustment
 		const heightAdj = height * heightAdjustment
 
-		// $('.target').each(function(i, target) {
-		// 	const targetPos = target.getBoundingClientRect();
-		// 	if( xAdj <= targetPos.x && (xAdj + widthAdj) >= (targetPos.x + targetPos.width) && yAdj <= targetPos.y && (yAdj + heightAdj) >= (targetPos.y + targetPos.height) ) {
-		// 		console.log('HIT')
-		// 		target.style.display="none"
-		// 		// window.this.incrementScore();
-		// 		window.this.setState({score: this.state.score + 1})
-		// 	}		
-		// });
 		const targets = document.querySelectorAll(".target");
 		targets.forEach(target => {
 			const targetPos = target.getBoundingClientRect();
 			if( xAdj <= targetPos.x && (xAdj + widthAdj) >= (targetPos.x + targetPos.width) && yAdj <= targetPos.y && (yAdj + heightAdj) >= (targetPos.y + targetPos.height) ) {
 				console.log('HIT')
 				target.style.display="none"
-				// window.this.incrementScore();
 				this.setState({score: this.state.score + 1})
 			}
 		});
-	}
-	incrementScore(){
-		this.setState({score: this.state.score + 1})
 	}
 	addTarget(){
 		const directions = ['left', 'right']
@@ -121,23 +112,63 @@ export default class App extends React.Component {
 		const initialPos = Math.floor(this.screen.current.clientWidth * Math.random())
 		console.log(targetDirection, initialPos)
 		$('#targets').append(`<div class="target ${targetDirection}" style="${targetDirection}: ${initialPos}px"></div>`)
+		// this.setState({createdTargets: this.state.createdTargets + 1 })
 		}
+
 	async startGame(){
+		console.log('starting game')
 		this.startVideo();
 		const lmodel = await handTrack.load(modelParams)
+		model = lmodel
 		console.log('model loaded')
-		await this.setState({ model: lmodel, message: 'model loaded' })
 		this.runDetection();
+		this.setState({ message: 'model loaded' })
+		// this.playGame();
+		// setInterval(step, this.state.gameSpeed);
+		// setInterval(this.addTarget, 5000)
+
 		setInterval(step, this.state.gameSpeed);
-		setInterval(this.addTarget, 5000)
+		// cant access state inside setInterval
+		const self = this;
+		let nTargets = this.state.nTargets;
+		let createdTargets = 0;
+		const createTargets = setInterval(function(){
+			self.addTarget();
+			createdTargets++
+			console.log('created',createdTargets, 'total',nTargets)
+			if(createdTargets > nTargets) {
+				clearInterval(createTargets)		
+				createdTargets = 0
+				// result
+				if((self.state.score / self.state.nTargets) > .6) {
+					self.setState({result: 'YOU WIN'})
+				}
+				else {
+					self.setState({result: 'YOU LOSE'})
+				}
+			}	
+		}, 5000)
 	}
+	// playGame(){
+	// 	setInterval(step, this.state.gameSpeed);
+	// 	while(this.state.createdTargets <= this.state.nTargets) {
+	// 		setInterval(this.addTarget, 5000)
+	// 	}
+	// 	if(this.state.score / this.state.nTargets > .6) {
+	// 		this.setState({result: 'YOU WIN'})
+	// 	}
+	// 	else {
+	// 		this.setState({result: 'YOU LOSE'})
+	// 	}
+	// }
 	render() {
 		return(
 			<>
 			<div ref={this.screen} id='screen'>
 			<div className="title">Duck Hunt!</div>
-				<div className="score">Score: {this.state.score}</div>
+				<div className="score">Score: {this.state.score} / {this.state.nTargets}</div>
 				<div id='targets' ref={this.targets}></div>
+				<h1>{this.state.result}!!</h1>
 				<button onClick={this.toggleVideo} id="trackbutton" className="bx--btn bx--btn--secondary" type="button">
       			Toggle Video
    		 		</button>

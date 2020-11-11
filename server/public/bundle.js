@@ -113,11 +113,16 @@ const modelParams = {
   scoreThreshold: 0.6 // confidence threshold for predictions.
 
 }; // have a hand icon
+// fix the video turn on delay  -maybe need await?
+// have better bird fly angles
+// set background image
+// do dog
 
 const nTargets = 5; // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
 
 const gameSpeed = 500; // later refactor on child component Options state
 
+let model = null;
 const video = document.getElementById("myvideo");
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
@@ -128,13 +133,14 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     super(props);
     this.state = {
       isVideo: false,
-      model: null,
       message: "loading model...",
       coordinates: [],
       range: 100,
       nTargets: nTargets,
+      // createdTargets: 0,
       gameSpeed: gameSpeed,
-      score: 0
+      score: 0,
+      result: ''
     };
     this.targets = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
     this.screen = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
@@ -144,8 +150,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     this.getCoordinates = this.getCoordinates.bind(this);
     this.startGame = this.startGame.bind(this);
     this.addTarget = this.addTarget.bind(this);
-    this.determineHit = this.determineHit.bind(this);
-    this.incrementScore = this.incrementScore.bind(this);
+    this.determineHit = this.determineHit.bind(this); // this.playGame = this.playGame.bind(this)
   }
 
   async startVideo() {
@@ -155,7 +160,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       this.setState({
         isVideo: true,
         message: "Video started. Now tracking"
-      }); // this.runDetection()
+      });
     } else {
       console.log('please enable video');
       this.setState({
@@ -166,13 +171,11 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
 
   toggleVideo() {
     if (!this.state.isVideo) {
-      // updateNote.innerText = "Starting video"
       this.startVideo();
       this.setState({
         message: "Starting video"
       });
     } else {
-      // updateNote.innerText = "Stopping video"
       handtrackjs__WEBPACK_IMPORTED_MODULE_1__["stopVideo"](video);
       this.setState({
         isVideo: false,
@@ -183,9 +186,9 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
 
 
   runDetection() {
-    this.state.model.detect(video).then(predictions => {
+    model.detect(video).then(predictions => {
       // console.log("Predictions: ", predictions);
-      this.state.model.renderPredictions(predictions, canvas, context, video);
+      model.renderPredictions(predictions, canvas, context, video); // this.playGame();
 
       if (predictions[0]) {
         const [x, y, width, height] = predictions[0].bbox; // console.log(x, y, width, height)
@@ -212,34 +215,18 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     const xAdj = x * widthAdjustment;
     const yAdj = y * heightAdjustment;
     const widthAdj = width * widthAdjustment;
-    const heightAdj = height * heightAdjustment; // $('.target').each(function(i, target) {
-    // 	const targetPos = target.getBoundingClientRect();
-    // 	if( xAdj <= targetPos.x && (xAdj + widthAdj) >= (targetPos.x + targetPos.width) && yAdj <= targetPos.y && (yAdj + heightAdj) >= (targetPos.y + targetPos.height) ) {
-    // 		console.log('HIT')
-    // 		target.style.display="none"
-    // 		// window.this.incrementScore();
-    // 		window.this.setState({score: this.state.score + 1})
-    // 	}		
-    // });
-
+    const heightAdj = height * heightAdjustment;
     const targets = document.querySelectorAll(".target");
     targets.forEach(target => {
       const targetPos = target.getBoundingClientRect();
 
       if (xAdj <= targetPos.x && xAdj + widthAdj >= targetPos.x + targetPos.width && yAdj <= targetPos.y && yAdj + heightAdj >= targetPos.y + targetPos.height) {
         console.log('HIT');
-        target.style.display = "none"; // window.this.incrementScore();
-
+        target.style.display = "none";
         this.setState({
           score: this.state.score + 1
         });
       }
-    });
-  }
-
-  incrementScore() {
-    this.setState({
-      score: this.state.score + 1
     });
   }
 
@@ -248,21 +235,60 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     const targetDirection = directions[Math.floor(Math.random() * directions.length)];
     const initialPos = Math.floor(this.screen.current.clientWidth * Math.random());
     console.log(targetDirection, initialPos);
-    $('#targets').append(`<div class="target ${targetDirection}" style="${targetDirection}: ${initialPos}px"></div>`);
+    $('#targets').append(`<div class="target ${targetDirection}" style="${targetDirection}: ${initialPos}px"></div>`); // this.setState({createdTargets: this.state.createdTargets + 1 })
   }
 
   async startGame() {
+    console.log('starting game');
     this.startVideo();
     const lmodel = await handtrackjs__WEBPACK_IMPORTED_MODULE_1__["load"](modelParams);
+    model = lmodel;
     console.log('model loaded');
-    await this.setState({
-      model: lmodel,
-      message: 'model loaded'
-    });
     this.runDetection();
-    setInterval(_server_uckHunt__WEBPACK_IMPORTED_MODULE_2__["default"], this.state.gameSpeed);
-    setInterval(this.addTarget, 5000);
-  }
+    this.setState({
+      message: 'model loaded'
+    }); // this.playGame();
+    // setInterval(step, this.state.gameSpeed);
+    // setInterval(this.addTarget, 5000)
+
+    setInterval(_server_uckHunt__WEBPACK_IMPORTED_MODULE_2__["default"], this.state.gameSpeed); // cant access state inside setInterval
+
+    const self = this;
+    let nTargets = this.state.nTargets;
+    let createdTargets = 0;
+    const createTargets = setInterval(function () {
+      self.addTarget();
+      createdTargets++;
+      console.log('created', createdTargets, 'total', nTargets);
+
+      if (createdTargets > nTargets) {
+        clearInterval(createTargets);
+        createdTargets = 0; // result
+
+        if (self.state.score / self.state.nTargets > .6) {
+          self.setState({
+            result: 'YOU WIN'
+          });
+        } else {
+          self.setState({
+            result: 'YOU LOSE'
+          });
+        }
+      }
+    }, 5000);
+  } // playGame(){
+  // 	setInterval(step, this.state.gameSpeed);
+  // 	while(this.state.createdTargets <= this.state.nTargets) {
+  // 		setInterval(this.addTarget, 5000)
+  // 	}
+  // 	if(this.state.score / this.state.nTargets > .6) {
+  // 		this.setState({result: 'YOU WIN'})
+  // 	}
+  // 	else {
+  // 		this.setState({result: 'YOU LOSE'})
+  // 	}
+  // }
+
 
   render() {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
@@ -272,10 +298,10 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       className: "title"
     }, "Duck Hunt!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "score"
-    }, "Score: ", this.state.score), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    }, "Score: ", this.state.score, " / ", this.state.nTargets), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       id: "targets",
       ref: this.targets
-    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, this.state.result, "!!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
       onClick: this.toggleVideo,
       id: "trackbutton",
       className: "bx--btn bx--btn--secondary",
