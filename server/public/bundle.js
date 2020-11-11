@@ -137,7 +137,6 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       coordinates: [],
       range: 100,
       nTargets: nTargets,
-      // createdTargets: 0,
       gameSpeed: gameSpeed,
       score: 0,
       result: ''
@@ -150,7 +149,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     this.getCoordinates = this.getCoordinates.bind(this);
     this.startGame = this.startGame.bind(this);
     this.addTarget = this.addTarget.bind(this);
-    this.determineHit = this.determineHit.bind(this); // this.playGame = this.playGame.bind(this)
+    this.determineHit = this.determineHit.bind(this);
   }
 
   async startVideo() {
@@ -240,8 +239,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
 
   async startGame() {
     console.log('starting game');
-    this.startVideo();
-    const lmodel = await handtrackjs__WEBPACK_IMPORTED_MODULE_1__["load"](modelParams);
+    const [videoStatus, lmodel] = await Promise.all([this.startVideo(), handtrackjs__WEBPACK_IMPORTED_MODULE_1__["load"](modelParams)]);
     model = lmodel;
     console.log('model loaded');
     this.runDetection();

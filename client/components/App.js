@@ -16,7 +16,6 @@ const modelParams = {
 const nTargets = 5 // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
 const gameSpeed = 500 // later refactor on child component Options state
 let model = null
-
 const video = document.getElementById("myvideo");
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
@@ -32,7 +31,6 @@ export default class App extends React.Component {
 			coordinates: [],
 			range: 100,
 			nTargets: nTargets,
-			// createdTargets: 0,
 			gameSpeed: gameSpeed,
 			score: 0,
 			result: ''
@@ -46,7 +44,6 @@ export default class App extends React.Component {
 		this.startGame = this.startGame.bind(this)
 		this.addTarget = this.addTarget.bind(this)
 		this.determineHit = this.determineHit.bind(this)
-		// this.playGame = this.playGame.bind(this)
 	}
 	async startVideo() {
 		const status = await handTrack.startVideo(video)
@@ -117,8 +114,10 @@ export default class App extends React.Component {
 
 	async startGame(){
 		console.log('starting game')
-		this.startVideo();
-		const lmodel = await handTrack.load(modelParams)
+		const [ videoStatus, lmodel ] = await Promise.all([
+			this.startVideo(),
+			handTrack.load(modelParams)
+		]);
 		model = lmodel
 		console.log('model loaded')
 		this.runDetection();
@@ -136,7 +135,7 @@ export default class App extends React.Component {
 			self.addTarget();
 			createdTargets++
 			console.log('created',createdTargets, 'total',nTargets)
-			if(createdTargets > nTargets) {
+			if(createdTargets >= nTargets) {
 				clearInterval(createTargets)		
 				createdTargets = 0
 				// result
