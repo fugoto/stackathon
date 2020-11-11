@@ -3,6 +3,8 @@ node_modules/*
 
 # Compiled JS
 server/public/*.js
+server/bundle.js
+server/bundle.js.map
 
 # NPM errors
 npm-debug.log
