@@ -99,14 +99,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var handtrackjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! handtrackjs */ "./node_modules/handtrackjs/src/index.js");
+/* harmony import */ var _server_uckHunt__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../server/*uckHunt */ "./server/*uckHunt.js");
 
- // const handTrack = window.handTrack;
-// next steps: to put prediction on state
-//sample prediction:
-// 0:
-// bbox: (4) [270.26879489421844, 94.34009146690369, 156.35127425193787, 149.49061799049377]
-// class: 0
-// score: 0.8765704035758972
+
 
 const modelParams = {
   flipHorizontal: true,
@@ -117,7 +112,18 @@ const modelParams = {
   // ioU threshold for non-max suppression
   scoreThreshold: 0.6 // confidence threshold for predictions.
 
-};
+}; // have a fist icon
+// fix the video turn on delay  -maybe need await?
+// have better bird fly angles
+// set background image
+// dictator heads
+// do dog
+
+const nTargets = 5; // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
+
+const gameSpeed = 500; // later refactor on child component Options state
+
+let model = null;
 const video = document.getElementById("myvideo");
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
@@ -128,17 +134,23 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     super(props);
     this.state = {
       isVideo: false,
-      model: null,
       message: "loading model...",
       coordinates: [],
-      range: 100
+      range: 100,
+      nTargets: nTargets,
+      gameSpeed: gameSpeed,
+      score: 0,
+      result: ''
     };
-    this.img = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
+    this.targets = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
     this.screen = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
     this.startVideo = this.startVideo.bind(this);
     this.toggleVideo = this.toggleVideo.bind(this);
     this.runDetection = this.runDetection.bind(this);
     this.getCoordinates = this.getCoordinates.bind(this);
+    this.startGame = this.startGame.bind(this);
+    this.addTarget = this.addTarget.bind(this);
+    this.determineHit = this.determineHit.bind(this);
   }
 
   async startVideo() {
@@ -148,7 +160,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       this.setState({
         isVideo: true,
         message: "Video started. Now tracking"
-      }); // this.runDetection()
+      });
     } else {
       console.log('please enable video');
       this.setState({
@@ -159,13 +171,11 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
 
   toggleVideo() {
     if (!this.state.isVideo) {
-      // updateNote.innerText = "Starting video"
       this.startVideo();
       this.setState({
         message: "Starting video"
       });
     } else {
-      // updateNote.innerText = "Stopping video"
       handtrackjs__WEBPACK_IMPORTED_MODULE_1__["stopVideo"](video);
       this.setState({
         isVideo: false,
@@ -176,16 +186,15 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
 
 
   runDetection() {
-    this.state.model.detect(video).then(predictions => {
+    model.detect(video).then(predictions => {
       // console.log("Predictions: ", predictions);
-      this.state.model.renderPredictions(predictions, canvas, context, video);
+      model.renderPredictions(predictions, canvas, context, video); // this.playGame();
 
       if (predictions[0]) {
         const [x, y, width, height] = predictions[0].bbox; // console.log(x, y, width, height)
 
         this.determineHit(x, y, width, height);
-      } // this.setState({coordinates: predictions.bbox})
-
+      }
 
       if (this.state.isVideo) {
         window.requestAnimationFrame(this.runDetection);
@@ -194,8 +203,8 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
   }
 
   getCoordinates() {
-    const img = this.img.current;
-    const target = img.getBoundingClientRect(); // console.log(target.x, target.y, target.width, target.height);
+    const target = this.targets.current.getBoundingClientRect();
+    console.log(target.x, target.y, target.width, target.height);
   } //1160 490
   // 640 480
 
@@ -206,46 +215,99 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     const xAdj = x * widthAdjustment;
     const yAdj = y * heightAdjustment;
     const widthAdj = width * widthAdjustment;
-    const heightAdj = height * heightAdjustment; // console.log(x, xAdj, y, yAdj)
-    // console.log(this.screen.current.clientWidth, this.screen.current.clientHeight)
-    // console.log(video.width, video.height)
+    const heightAdj = height * heightAdjustment;
+    const targets = document.querySelectorAll(".target");
+    targets.forEach(target => {
+      const targetPos = target.getBoundingClientRect();
 
-    const img = this.img.current;
-    const target = img.getBoundingClientRect();
-    const range = this.state.range;
-
-    if (xAdj <= target.x && xAdj + widthAdj >= target.x + target.width && yAdj <= target.y && yAdj + heightAdj >= target.y + target.height) {
-      console.log('HIT');
-      img.style.display = "none";
-    }
-  } // Load the model
-
-
-  async componentDidMount() {
-    this.startVideo();
-    console.log('video loaded');
-    const lmodel = await handtrackjs__WEBPACK_IMPORTED_MODULE_1__["load"](modelParams);
-    console.log('model loaded');
-    await this.setState({
-      model: lmodel,
-      message: 'model loaded'
+      if (xAdj <= targetPos.x && xAdj + widthAdj >= targetPos.x + targetPos.width && yAdj <= targetPos.y && yAdj + heightAdj >= targetPos.y + targetPos.height) {
+        console.log('HIT');
+        target.style.display = "none";
+        this.setState({
+          score: this.state.score + 1
+        });
+      }
     });
-    this.runDetection();
   }
+
+  addTarget() {
+    const directions = ['left', 'right'];
+    const targetDirection = directions[Math.floor(Math.random() * directions.length)];
+    const initialPos = Math.floor(this.screen.current.clientWidth * Math.random());
+    console.log(targetDirection, initialPos);
+    $('#targets').append(`<div class="target ${targetDirection}" style="${targetDirection}: ${initialPos}px"></div>`); // this.setState({createdTargets: this.state.createdTargets + 1 })
+  }
+
+  async startGame() {
+    console.log('starting game');
+    const [videoStatus, lmodel] = await Promise.all([this.startVideo(), handtrackjs__WEBPACK_IMPORTED_MODULE_1__["load"](modelParams)]);
+    model = lmodel;
+    console.log('model loaded');
+    this.runDetection();
+    this.setState({
+      message: 'model loaded'
+    }); // this.playGame();
+    // setInterval(step, this.state.gameSpeed);
+    // setInterval(this.addTarget, 5000)
+
+    setInterval(_server_uckHunt__WEBPACK_IMPORTED_MODULE_2__["default"], this.state.gameSpeed); // cant access state inside setInterval
+
+    const self = this;
+    let nTargets = this.state.nTargets;
+    let createdTargets = 0;
+    const createTargets = setInterval(function () {
+      self.addTarget();
+      createdTargets++;
+      console.log('created', createdTargets, 'total', nTargets);
+
+      if (createdTargets >= nTargets) {
+        clearInterval(createTargets);
+        createdTargets = 0; // result
+
+        if (self.state.score / self.state.nTargets > .6) {
+          self.setState({
+            result: 'YOU WIN'
+          });
+        } else {
+          self.setState({
+            result: 'YOU LOSE'
+          });
+        }
+      }
+    }, 5000);
+  } // playGame(){
+  // 	setInterval(step, this.state.gameSpeed);
+  // 	while(this.state.createdTargets <= this.state.nTargets) {
+  // 		setInterval(this.addTarget, 5000)
+  // 	}
+  // 	if(this.state.score / this.state.nTargets > .6) {
+  // 		this.setState({result: 'YOU WIN'})
+  // 	}
+  // 	else {
+  // 		this.setState({result: 'YOU LOSE'})
+  // 	}
+  // }
+
 
   render() {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       ref: this.screen,
       id: "screen"
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
-      ref: this.img,
-      src: "/images/duck.png"
-    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "title"
+    }, "Duck Hunt!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "score"
+    }, "Score: ", this.state.score, " / ", this.state.nTargets), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      id: "targets",
+      ref: this.targets
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, this.state.result, "!!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
       onClick: this.toggleVideo,
       id: "trackbutton",
       className: "bx--btn bx--btn--secondary",
       type: "button"
     }, "Toggle Video"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+      onClick: this.startGame
+    }, "Start Game"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
       onClick: this.getCoordinates
     }, "test"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       id: "updatenote",
@@ -88979,14 +89041,118 @@ module.exports = function(module) {
 
 /***/ }),
 
+/***/ "./server/*uckHunt.js":
+/*!****************************!*\
+  !*** ./server/*uckHunt.js ***!
+  \****************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return step; });
+ // var jsdom = require("jsdom");
+// const { JSDOM } = jsdom;
+// const { window } = new JSDOM();
+// const { document } = (new JSDOM('')).window;
+// global.document = document;
+// import {$,jQuery} from './libs/jquery/dist/jquery.js';
+// import * as $ from 'jquery'
+// export for others scripts to use
+// window.$ = $;
+// window.jQuery = jQuery;
+// import * as JQuery from 'jquery'
+// const $ = JQuery(window);
+// jshint devel:true
+
+console.log('Welcome to *uck Hunt!'); // timing variables
+
+const lostTargetFadeOutTime = 300; // var gameSpeed = 500;              // 2 fps
+
+function isAlive(target) {
+  return target.hasClass('left') || target.hasClass('right');
+}
+
+function updateTarget(target) {
+  // bounce left to right
+  if (target.offset().left < 0) {
+    target.removeClass('left').addClass('right');
+  } // bounce right to left
+
+
+  if (target.offset().left > $(document).width() - 200) {
+    target.removeClass('right').addClass('left');
+  } // Set the vertical position of the duck.
+  // Note that we set bottom equal to top to move the duck up exactly 1 duck
+  // height and this is "smoothed" out by the CSS3 transition settings.
+
+
+  var newBottom = $(document).height() - target.offset().top;
+  target.css('bottom', newBottom); // flap those wings
+
+  target.toggleClass('flap'); // if duck has escaped, fade it out and recycle it.
+
+  if (target.offset().top < 0) {
+    target.fadeOut(lostTargetFadeOutTime, function () {
+      target.removeClass('left right'); // TODO: recycle the duck
+    });
+  }
+} // update the score, duck positions, orientations, and state
+
+
+function step() {
+  $('.target').each(function (i, target) {
+    target = $(target);
+
+    if (isAlive(target)) {
+      updateTarget(target);
+    } else {
+      console.log('Skipping lost or dead target');
+    } // console.log('target: top=' + target.offset().top + ', class=' + target.attr('class'));
+
+  }); // move each left facing duck a little further to the left
+
+  $('.target.left').each(function (i, target) {
+    target = $(target);
+    target.css('left', target.offset().left - 30);
+  }); // move each right facing duck a little further to the right
+
+  $('.target.right').each(function (i, target) {
+    target = $(target);
+    target.css('left', target.offset().left + 30);
+  });
+} // get everything going.
+// $(function() {
+//   setInterval(step, gameSpeed);
+// });
+// function startGame () {
+//   setInterval(step, gameSpeed);
+// }
+
+/***/ }),
+
+/***/ "./server/public/style.scss":
+/*!**********************************!*\
+  !*** ./server/public/style.scss ***!
+  \**********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "server/public/style.min.css");
+
+/***/ }),
+
 /***/ 0:
-/*!*******************************!*\
-  !*** multi ./client/index.js ***!
-  \*******************************/
+/*!**********************************************************!*\
+  !*** multi ./client/index.js ./server/public/style.scss ***!
+  \**********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! ./client/index.js */"./client/index.js");
+__webpack_require__(/*! ./client/index.js */"./client/index.js");
+module.exports = __webpack_require__(/*! ./server/public/style.scss */"./server/public/style.scss");
 
 
 /***/ }),

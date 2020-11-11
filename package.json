@@ -22,9 +22,16 @@
     "url": "https://github.com/fugoto/stackathon/issues"
   },
   "homepage": "https://github.com/fugoto/stackathon#readme",
+  "eslintConfig": {
+    "globals": {
+      "$": false
+    }
+  },
   "dependencies": {
     "express": "^4.17.1",
     "handtrackjs": "0.0.13",
+    "jquery": "^3.5.1",
+    "jsdom": "^16.4.0",
     "morgan": "^1.10.0",
     "path": "^0.12.7",
     "react": "^17.0.1",
@@ -32,13 +39,17 @@
     "react-router-dom": "^5.2.0"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
-    "mocha": "^8.1.2",
-    "nodemon": "^2.0.4",
-    "webpack": "^4.44.1",
-    "webpack-cli": "^3.3.12",
     "@babel/core": "^7.4.3",
     "@babel/preset-react": "^7.0.0",
-    "babel-loader": "^8.0.5"
+    "babel-loader": "^8.0.5",
+    "chai": "^4.2.0",
+    "file-loader": "^6.2.0",
+    "mocha": "^8.1.2",
+    "node-sass": "^5.0.0",
+    "nodemon": "^2.0.4",
+    "sass": "^1.29.0",
+    "sass-loader": "^10.0.5",
+    "webpack": "^4.44.2",
+    "webpack-cli": "^3.3.12"
   }
 }

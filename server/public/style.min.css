@@ -1,0 +1,135 @@
+h1 {
+  color: limegreen;
+}
+
+.highlighter {
+  background: rgba(0, 255, 0, 0.25);
+  border: 1px dashed #fff;
+  z-index: 1;
+  position: absolute;
+}
+
+body {
+  padding: 20px;
+}
+
+.p20 {
+  padding: 20px;
+}
+
+.canvasbox {
+  border-radius: 3px;
+  width: 100vw;
+  height: 100vh;
+  border-bottom: 3px solid #0063FF;
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 4px 10px 0 #00000030;
+  z-index: -1;
+}
+
+.mb10 {
+  margin-bottom: 10px;
+}
+
+.mt10 {
+  margin-top: 10px;
+}
+
+.updatenote {
+  padding: 10px;
+  background: #f59314;
+  color: white;
+  display: inline;
+}
+
+#app {
+  position: absolute;
+  /* width: 100vh;
+  height: 100vw; */
+  /* background-color: gray; */
+  top: 0;
+  left: 0;
+  /* width: 960px;
+  height: 720px; */
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+}
+
+#frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#frame video {
+  /* position: absolute;
+  top: 0;
+  left: 0;
+  height: auto;
+  width: 100%; */
+  object-fit: fill;
+  display: none;
+  background-color: gray;
+}
+
+img {
+  height: 100px;
+  width: 100px;
+}
+
+#screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  /* background-color: lightpink; */
+}
+
+.score {
+  position: absolute;
+  top: 10px;
+  right: 30px;
+  font-size: 2em;
+  font-family: Tahoma, Geneva, sans-serif;
+  color: red;
+}
+
+.title {
+  position: absolute;
+  top: 10px;
+  left: 30px;
+  font-size: 2em;
+  font-family: Tahoma, Geneva, sans-serif;
+}
+
+.target {
+  position: absolute;
+  width: 110px;
+  height: 115px;
+  background-image: url("/images/duckhunt.png");
+  background-repeat: no-repeat;
+  bottom: 0;
+  transition: left 1s, top 1s, right 1s, bottom 1s;
+  transition-timing-function: linear;
+}
+.target.right {
+  background-position: -200px -160px;
+}
+.target.right.flap {
+  background-position: -300px -160px;
+}
+.target.left {
+  background-position: -100px -160px;
+}
+.target.left.flap {
+  background-position: -430px -160px;
+}
+.target.shot {
+  z-index: -1;
+  background-image: url("/images/shot.png");
+}
