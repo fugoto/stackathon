@@ -12,12 +12,13 @@ const modelParams = {
 // fist should not appear in beginning
 // bird explode
 // do dog and grass
-//awkward when bird is created
+//awkward when bird is created (initial flight)
+// set favicon
 // dictator heads
 // logo
 // levels: speed, fist size, frequency of new target created
 // 2 fists - xtra credit
-const nTargets = 5 // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
+const nTargets = 3 // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
 const gameSpeed = 500 // later refactor on child component Options state
 let model = null
 const video = document.getElementById("myvideo");
@@ -41,7 +42,8 @@ export default class App extends React.Component {
 			nTargets: nTargets,
 			gameSpeed: gameSpeed,
 			score: 0,
-			result: ''
+			result: '',
+			inPlay: false,
 		}
 		this.targets = React.createRef();
 		this.screen = React.createRef();
@@ -138,13 +140,12 @@ export default class App extends React.Component {
 		const directions = ['left', 'right']
 		const targetDirection = directions[Math.floor(Math.random() * directions.length)]
 		const initialPos = Math.floor(this.screen.current.clientWidth * Math.random())
-		console.log(targetDirection, initialPos)
 		$('#targets').append(`<div class="target ${targetDirection}" style="${targetDirection}: ${initialPos}px"></div>`)
 		}
 
 	async startGame(){
 		console.log('starting game')
-		// DO NOT DELETE BELOW
+		// DO NOT DELETE BELOW if commented out!!!!!!!!!!
 		// const [ videoStatus, lmodel ] = await Promise.all([
 		// 	this.startVideo(),
 		// 	handTrack.load(modelParams)
@@ -154,7 +155,7 @@ export default class App extends React.Component {
 		// this.runDetection();
 		// this.setState({ message: 'model loaded' })
 		setInterval(step, this.state.gameSpeed);
-		// cant access state inside setInterval
+		// defining "self" becuase cant access state inside setInterval
 		const self = this;
 		let nTargets = this.state.nTargets;
 		let createdTargets = 0;
@@ -163,11 +164,12 @@ export default class App extends React.Component {
 			self.checkGameEnd()
 			createdTargets++
 			console.log('created',createdTargets, 'total',nTargets)
-			if(createdTargets === nTargets && self.checkGameEnd()) {
+			if(createdTargets === nTargets) {
 				clearInterval(createTargets)
 				createdTargets = 0
 				// while(true){
-				// 	if(self.checkGameEnd()){
+					if(self.checkGameEnd()){
+						console.log('gameend',self.checkGameEnd())
 						if((self.state.score / self.state.nTargets) >= .6) {
 							self.setState({result: 'YOU WIN'})
 						}
@@ -175,7 +177,7 @@ export default class App extends React.Component {
 							self.setState({result: 'YOU LOSE'})
 						}
 					}
-				// }
+				}
 			// }	
 		}, 8000)
 		
@@ -183,13 +185,25 @@ export default class App extends React.Component {
 	}
 
 	checkGameEnd(){
-		// if (!targets.length) return false
-		for(let i = 0; i < targets.length; i ++) {
+
+		document.addEventListener('DOMContentLoaded', function(){
+		for(let i = 0; i < targets.length; i++) {
 			let target = targets[i]
-			console.log(target)
+			console.log('target',target)
 			if(target.style.display !== 'none') return false
 		}
 		return true
+	});
+		// if (!targets.length) return false
+		console.log(targets.length)
+		// for(let i = 0; i < targets.length; i++) {
+		// 	let target = targets[i]
+		// 	console.log('target',target)
+		// 	if(target.style.display !== 'none') return false
+		// }
+		// targets.forEach(target => {
+		// 	if(target.style.display !== 'none') return false
+		// })
 	}
 
 	render() {
