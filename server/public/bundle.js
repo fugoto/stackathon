@@ -112,7 +112,8 @@ const modelParams = {
   // ioU threshold for non-max suppression
   scoreThreshold: 0.6 // confidence threshold for predictions.
 
-}; // fist should not appear in beginning
+}; // fist is off from bounding box - i may not be able to put the width on state
+// fist should not appear in beginning
 // bird explode
 // do dog and grass
 //awkward when bird is created (initial flight)
@@ -141,13 +142,15 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       isVideo: false,
       message: "loading model...",
       coordinates: [],
-      // errorMargin: 100,
+      errorMargin: 100,
       nTargets: nTargets,
       gameSpeed: gameSpeed,
       score: 0,
       result: '',
       inPlay: false,
-      targets: []
+      targets: [],
+      fistWidth: '150px',
+      fistHeight: '116px'
     };
     this.targets = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
     this.screen = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
@@ -190,13 +193,12 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
         message: "Video stopped"
       });
     }
-  } //predictions: [ x, y, width, height ]
-
+  }
 
   runDetection() {
     model.detect(video).then(predictions => {
       // console.log("Predictions: ", predictions);
-      model.renderPredictions(predictions, canvas, context, video);
+      model.renderPredictions(predictions, canvas, context, video); //predictions[0]: [ x, y, width, height ]
 
       if (predictions[0]) {
         const [x, y, width, height] = predictions[0].bbox; // console.log(x, y, width, height)
@@ -207,11 +209,12 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
         const fistPos = this.fist.current.getBoundingClientRect(); // this.fist.current.style.left = xAdj + widthAdj / 2  - fistPos.width/2
         // this.fist.current.style.top = yAdj + heightAdj /2 - fistPos.height/2
 
+        console.log(fistPos);
         $(".fist").animate({
           left: xAdj + widthAdj / 2 - fistPos.width / 2,
           top: yAdj + heightAdj / 2 - fistPos.height / 2
         }, 1);
-        this.determineHit(xAdj, yAdj, widthAdj, heightAdj);
+        this.determineHit(xAdj + widthAdj / 2 - fistPos.width / 2, yAdj + heightAdj / 2 - fistPos.height / 2, fistPos.width, fistPos.height);
       }
 
       if (this.state.isVideo) {
@@ -241,10 +244,11 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
 
   determineHit(xAdj, yAdj, widthAdj, heightAdj) {
     let targets = document.querySelectorAll(".target");
+    const errorMargin = this.state.errorMargin;
     targets.forEach(target => {
       const targetPos = target.getBoundingClientRect();
 
-      if (xAdj <= targetPos.x && xAdj + widthAdj >= targetPos.x + targetPos.width && yAdj <= targetPos.y && yAdj + heightAdj >= targetPos.y + targetPos.height) {
+      if (xAdj - errorMargin <= targetPos.x && xAdj + widthAdj + errorMargin >= targetPos.x + targetPos.width && yAdj - errorMargin <= targetPos.y && yAdj + heightAdj + errorMargin >= targetPos.y + targetPos.height) {
         console.log('HIT');
         target.style.display = "none";
         this.setState({
@@ -336,17 +340,24 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       className: "score"
     }, "Score: ", this.state.score, " / ", this.state.nTargets), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
       className: "fist",
+      src: "/images/fist.png",
       ref: this.fist,
-      src: "/images/fist.png"
+      style: {
+        width: this.state.fistWidth,
+        height: this.state.fistHeight
+      }
     }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       id: "targets",
       ref: this.targets
-    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, this.state.result), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", {
+      className: "result"
+    }, this.state.result), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
       onClick: this.toggleVideo,
       id: "trackbutton",
       className: "bx--btn bx--btn--secondary",
       type: "button"
     }, "Toggle Video"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+      id: "start-game",
       onClick: this.startGame
     }, "Start Game"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       id: "updatenote",

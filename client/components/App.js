@@ -8,6 +8,7 @@ const modelParams = {
     iouThreshold: 0.5,      // ioU threshold for non-max suppression
     scoreThreshold: 0.6,    // confidence threshold for predictions.
 }
+// fist is off from bounding box - i may not be able to put the width on state
 // fist should not appear in beginning
 // bird explode
 // do dog and grass
@@ -37,13 +38,15 @@ export default class App extends React.Component {
 			isVideo: false,
 			message: "loading model...",
 			coordinates: [],
-			// errorMargin: 100,
+			errorMargin: 100,
 			nTargets: nTargets,
 			gameSpeed: gameSpeed,
 			score: 0,
 			result: '',
 			inPlay: false,
-			targets: []
+			targets: [],
+			fistWidth: '150px',
+			fistHeight: '116px'
 		}
 		this.targets = React.createRef();
 		this.screen = React.createRef();
@@ -74,11 +77,12 @@ export default class App extends React.Component {
 			this.setState({ isVideo: false, message: "Video stopped" });
 		}
 	}
-//predictions: [ x, y, width, height ]
+
 	runDetection() {
 		model.detect(video).then(predictions => {
 			// console.log("Predictions: ", predictions);
 			model.renderPredictions(predictions, canvas, context, video);
+			//predictions[0]: [ x, y, width, height ]
 			if(predictions[0]) {
 				const [ x, y, width, height ] = predictions[0].bbox
 				// console.log(x, y, width, height)
@@ -88,12 +92,12 @@ export default class App extends React.Component {
 				const fistPos = this.fist.current.getBoundingClientRect();
 				// this.fist.current.style.left = xAdj + widthAdj / 2  - fistPos.width/2
 				// this.fist.current.style.top = yAdj + heightAdj /2 - fistPos.height/2
-
+				console.log(fistPos)
 				$(".fist").animate({ 
 					left: xAdj + widthAdj / 2  - fistPos.width/2,
 					top: yAdj + heightAdj /2 - fistPos.height/2}, 1);
 
-				this.determineHit(xAdj, yAdj, widthAdj, heightAdj)
+				this.determineHit(xAdj + widthAdj / 2  - fistPos.width/2, yAdj + heightAdj /2 - fistPos.height/2, fistPos.width, fistPos.height)
 			}
 			if (this.state.isVideo) {
 				window.requestAnimationFrame(this.runDetection);
@@ -120,9 +124,14 @@ export default class App extends React.Component {
 	}
 	determineHit(xAdj, yAdj, widthAdj, heightAdj) {
 		let targets = document.querySelectorAll(".target");
+		const errorMargin = this.state.errorMargin
+		
 		targets.forEach(target => {
 			const targetPos = target.getBoundingClientRect();
-			if( xAdj <= targetPos.x && (xAdj + widthAdj) >= (targetPos.x + targetPos.width) && yAdj <= targetPos.y && (yAdj + heightAdj) >= (targetPos.y + targetPos.height) ) {
+			if( xAdj - errorMargin <= targetPos.x 
+				&& (xAdj + widthAdj) + errorMargin >= (targetPos.x + targetPos.width) 
+				&& yAdj - errorMargin <= targetPos.y 
+				&& (yAdj + heightAdj) + errorMargin >= (targetPos.y + targetPos.height) ) {
 				console.log('HIT')
 				target.style.display="none"
 				this.setState({score: this.state.score + 1})
@@ -149,6 +158,7 @@ export default class App extends React.Component {
 		this.runDetection();
 		this.setState({ message: 'model loaded' })
 		setInterval(step, this.state.gameSpeed);
+
 		// defining "self" becuase cant access state inside setInterval
 		const self = this;
 		let nTargets = this.state.nTargets;
@@ -195,13 +205,17 @@ export default class App extends React.Component {
 			<div ref={this.screen} id='screen'>
 			<div className="title">Duck Hunt!</div>
 				<div className="score">Score: {this.state.score} / {this.state.nTargets}</div>
-				<img className="fist" ref={this.fist} src='/images/fist.png'></img>
+				{/* <div className="fist" ref={this.fist} style={{width: this.state.fistWidth}}>
+					<img className='fistImage' src='/images/fist.png'></img>
+				</div> */}
+				<img className="fist" src='/images/fist.png' ref={this.fist} style={{width: this.state.fistWidth, height: this.state.fistHeight}}></img>
+				{/* style={{width: this.state.fistWidth, height: this.state.fistHeight}} */}
 				<div id='targets' ref={this.targets}></div>
-				<h1>{this.state.result}</h1>
+				<h1 className='result'>{this.state.result}</h1>
 				<button onClick={this.toggleVideo} id="trackbutton" className="bx--btn bx--btn--secondary" type="button">
       			Toggle Video
    		 		</button>
-				<button onClick={this.startGame}>Start Game</button>
+				<button id='start-game' onClick={this.startGame}>Start Game</button>
 				{/* <button onClick={this.getCoordinates}>test</button> */}
 				<div id="updatenote" className="updatenote mt10">{this.state.message}</div>
 			</div>

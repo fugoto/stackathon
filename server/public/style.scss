@@ -18,8 +18,8 @@ h1 {
 
 .canvasbox {
     border-radius: 3px;
-    width: 100px;
-    height: auto;
+    width: 100vw;
+    height: 100vh;
     border-bottom: 3px solid #0063FF;
     box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 4px 10px 0 #00000030;
     z-index: -2;
@@ -69,6 +69,8 @@ h1 {
     object-fit: fill;
     display: none;
     background-color: gray;
+    // height: 100vh;
+    // width: 100vw;
   }
   
   img {
@@ -143,12 +145,28 @@ h1 {
     }
   }
 
-  .fist {
-    position: fixed;
-    max-width:100px;
-    max-height:100px;
-    width: auto;
+  .fist{
+    position: absolute;
+    // width: 200px;
+    // height: auto;
+  }
+
+  .fistImage {
+    // position: absolute;
+    // max-width:100px;
+    // max-height:auto;
+    width: 100%;
     height: auto;
-    background-image: url('/images/fist.png');
+    // background-image: url('/images/fist.png');
+    // object-fit: fill;
     z-index: -1;
+    opacity: 0.6;
+  }
+
+  .result {
+    color: white;
+  }
+
+  #start-game {
+    z-index: 50
   }
