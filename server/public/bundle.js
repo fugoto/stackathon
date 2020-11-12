@@ -112,8 +112,7 @@ const modelParams = {
   // ioU threshold for non-max suppression
   scoreThreshold: 0.6 // confidence threshold for predictions.
 
-}; // win result comes too early, fix that. look at lose - NEED TO LOOK AT THIS, start line 170
-// fist should not appear in beginning
+}; // fist should not appear in beginning
 // bird explode
 // do dog and grass
 //awkward when bird is created (initial flight)
@@ -147,7 +146,8 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       gameSpeed: gameSpeed,
       score: 0,
       result: '',
-      inPlay: false
+      inPlay: false,
+      targets: []
     };
     this.targets = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
     this.screen = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
@@ -196,7 +196,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
   runDetection() {
     model.detect(video).then(predictions => {
       // console.log("Predictions: ", predictions);
-      model.renderPredictions(predictions, canvas, context, video); // this.playGame();
+      model.renderPredictions(predictions, canvas, context, video);
 
       if (predictions[0]) {
         const [x, y, width, height] = predictions[0].bbox; // console.log(x, y, width, height)
@@ -240,12 +240,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
   }
 
   determineHit(xAdj, yAdj, widthAdj, heightAdj) {
-    // const widthAdjustment = this.screen.current.clientWidth / video.width
-    // const heightAdjustment = this.screen.current.clientHeight / video.height
-    // const xAdj = x * widthAdjustment
-    // const yAdj = y * heightAdjustment
-    // const widthAdj = width * widthAdjustment
-    // const heightAdj = height * heightAdjustment
+    let targets = document.querySelectorAll(".target");
     targets.forEach(target => {
       const targetPos = target.getBoundingClientRect();
 
@@ -267,68 +262,68 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
   }
 
   async startGame() {
-    console.log('starting game'); // DO NOT DELETE BELOW if commented out!!!!!!!!!!
-    // const [ videoStatus, lmodel ] = await Promise.all([
-    // 	this.startVideo(),
-    // 	handTrack.load(modelParams)
-    // ]);
-    // model = lmodel
-    // console.log('model loaded')
-    // this.runDetection();
-    // this.setState({ message: 'model loaded' })
+    console.log('starting game');
+    this.setState({
+      inPlay: true
+    }); // DO NOT DELETE BELOW if commented out!!!!!!!!!!
 
+    const [videoStatus, lmodel] = await Promise.all([this.startVideo(), handtrackjs__WEBPACK_IMPORTED_MODULE_1__["load"](modelParams)]);
+    model = lmodel;
+    console.log('model loaded');
+    this.runDetection();
+    this.setState({
+      message: 'model loaded'
+    });
     setInterval(_server_uckHunt__WEBPACK_IMPORTED_MODULE_2__["default"], this.state.gameSpeed); // defining "self" becuase cant access state inside setInterval
 
     const self = this;
     let nTargets = this.state.nTargets;
     let createdTargets = 0;
     const createTargets = setInterval(function () {
-      self.addTarget();
-      self.checkGameEnd();
-      createdTargets++;
-      console.log('created', createdTargets, 'total', nTargets);
+      if (createdTargets < nTargets) {
+        self.addTarget();
+        createdTargets++;
+      }
 
-      if (createdTargets === nTargets) {
-        clearInterval(createTargets);
-        createdTargets = 0; // while(true){
-
-        if (self.checkGameEnd()) {
-          console.log('gameend', self.checkGameEnd());
-
-          if (self.state.score / self.state.nTargets >= .6) {
-            self.setState({
-              result: 'YOU WIN'
-            });
-          } else {
-            self.setState({
-              result: 'YOU LOSE'
-            });
-          }
+      if (self.checkGameEnd() && createdTargets === nTargets) {
+        if (self.state.score / self.state.nTargets >= .6) {
+          self.setState({
+            result: 'YOU WIN'
+          });
+        } else {
+          self.setState({
+            result: 'YOU LOSE'
+          });
         }
-      } // }	
 
-    }, 8000); // result
+        clearInterval(createTargets);
+      }
+    }, 5000);
+  }
+
+  result() {
+    if (self.state.score / self.state.nTargets >= .6) {
+      self.setState({
+        result: 'YOU WIN'
+      });
+    } else {
+      self.setState({
+        result: 'YOU LOSE'
+      });
+    }
   }
 
   checkGameEnd() {
-    document.addEventListener('DOMContentLoaded', function () {
-      for (let i = 0; i < targets.length; i++) {
-        let target = targets[i];
-        console.log('target', target);
-        if (target.style.display !== 'none') return false;
-      }
+    let targets = document.querySelectorAll(".target");
+    if (!targets.length) return false;
 
-      return true;
-    }); // if (!targets.length) return false
+    for (let i = 0; i < targets.length; i++) {
+      let target = targets[i];
+      console.log('target', target);
+      if (target.style.display !== 'none') return false;
+    }
 
-    console.log(targets.length); // for(let i = 0; i < targets.length; i++) {
-    // 	let target = targets[i]
-    // 	console.log('target',target)
-    // 	if(target.style.display !== 'none') return false
-    // }
-    // targets.forEach(target => {
-    // 	if(target.style.display !== 'none') return false
-    // })
+    return true;
   }
 
   render() {

@@ -8,7 +8,6 @@ const modelParams = {
     iouThreshold: 0.5,      // ioU threshold for non-max suppression
     scoreThreshold: 0.6,    // confidence threshold for predictions.
 }
-// win result comes too early, fix that. look at lose - NEED TO LOOK AT THIS, start line 170
 // fist should not appear in beginning
 // bird explode
 // do dog and grass
@@ -44,6 +43,7 @@ export default class App extends React.Component {
 			score: 0,
 			result: '',
 			inPlay: false,
+			targets: []
 		}
 		this.targets = React.createRef();
 		this.screen = React.createRef();
@@ -79,7 +79,6 @@ export default class App extends React.Component {
 		model.detect(video).then(predictions => {
 			// console.log("Predictions: ", predictions);
 			model.renderPredictions(predictions, canvas, context, video);
-			// this.playGame();
 			if(predictions[0]) {
 				const [ x, y, width, height ] = predictions[0].bbox
 				// console.log(x, y, width, height)
@@ -120,13 +119,7 @@ export default class App extends React.Component {
 		return [xAdj, yAdj, widthAdj, heightAdj]
 	}
 	determineHit(xAdj, yAdj, widthAdj, heightAdj) {
-		// const widthAdjustment = this.screen.current.clientWidth / video.width
-		// const heightAdjustment = this.screen.current.clientHeight / video.height
-		// const xAdj = x * widthAdjustment
-		// const yAdj = y * heightAdjustment
-		// const widthAdj = width * widthAdjustment
-		// const heightAdj = height * heightAdjustment
-
+		let targets = document.querySelectorAll(".target");
 		targets.forEach(target => {
 			const targetPos = target.getBoundingClientRect();
 			if( xAdj <= targetPos.x && (xAdj + widthAdj) >= (targetPos.x + targetPos.width) && yAdj <= targetPos.y && (yAdj + heightAdj) >= (targetPos.y + targetPos.height) ) {
@@ -145,65 +138,55 @@ export default class App extends React.Component {
 
 	async startGame(){
 		console.log('starting game')
+		this.setState({inPlay: true})
 		// DO NOT DELETE BELOW if commented out!!!!!!!!!!
-		// const [ videoStatus, lmodel ] = await Promise.all([
-		// 	this.startVideo(),
-		// 	handTrack.load(modelParams)
-		// ]);
-		// model = lmodel
-		// console.log('model loaded')
-		// this.runDetection();
-		// this.setState({ message: 'model loaded' })
+		const [ videoStatus, lmodel ] = await Promise.all([
+			this.startVideo(),
+			handTrack.load(modelParams)
+		]);
+		model = lmodel
+		console.log('model loaded')
+		this.runDetection();
+		this.setState({ message: 'model loaded' })
 		setInterval(step, this.state.gameSpeed);
 		// defining "self" becuase cant access state inside setInterval
 		const self = this;
 		let nTargets = this.state.nTargets;
 		let createdTargets = 0;
 		const createTargets = setInterval(function(){
-			self.addTarget();
-			self.checkGameEnd()
-			createdTargets++
-			console.log('created',createdTargets, 'total',nTargets)
-			if(createdTargets === nTargets) {
-				clearInterval(createTargets)
-				createdTargets = 0
-				// while(true){
-					if(self.checkGameEnd()){
-						console.log('gameend',self.checkGameEnd())
-						if((self.state.score / self.state.nTargets) >= .6) {
-							self.setState({result: 'YOU WIN'})
-						}
-						else {
-							self.setState({result: 'YOU LOSE'})
-						}
-					}
+			if(createdTargets < nTargets) {
+				self.addTarget();
+				createdTargets++	
+			}
+			if(self.checkGameEnd() && createdTargets === nTargets) {
+				if((self.state.score / self.state.nTargets) >= .6) {
+					self.setState({result: 'YOU WIN'})
 				}
-			// }	
-		}, 8000)
-		
-		// result
+				else {
+					self.setState({result: 'YOU LOSE'})
+				}
+				clearInterval(createTargets)	
+			}
+		}, 5000)
 	}
-
-	checkGameEnd(){
-
-		document.addEventListener('DOMContentLoaded', function(){
-		for(let i = 0; i < targets.length; i++) {
-			let target = targets[i]
-			console.log('target',target)
-			if(target.style.display !== 'none') return false
+	
+	result() {
+		if((self.state.score / self.state.nTargets) >= .6) {
+			self.setState({result: 'YOU WIN'})
 		}
-		return true
-	});
-		// if (!targets.length) return false
-		console.log(targets.length)
-		// for(let i = 0; i < targets.length; i++) {
-		// 	let target = targets[i]
-		// 	console.log('target',target)
-		// 	if(target.style.display !== 'none') return false
-		// }
-		// targets.forEach(target => {
-		// 	if(target.style.display !== 'none') return false
-		// })
+		else {
+			self.setState({result: 'YOU LOSE'})
+		}
+	}
+	checkGameEnd(){
+		let targets = document.querySelectorAll(".target");
+			if(!targets.length) return false
+			for(let i = 0; i < targets.length; i++) {
+				let target = targets[i]
+				console.log('target',target)
+				if(target.style.display !== 'none') return false
+			}
+			return true
 	}
 
 	render() {
