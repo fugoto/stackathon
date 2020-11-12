@@ -32,7 +32,7 @@ export default class App extends React.Component {
 			isVideo: false,
 			message: "loading model...",
 			coordinates: [],
-			range: 100,
+			// errorMargin: 100,
 			nTargets: nTargets,
 			gameSpeed: gameSpeed,
 			score: 0,
@@ -77,9 +77,16 @@ export default class App extends React.Component {
 				const [ x, y, width, height ] = predictions[0].bbox
 				// console.log(x, y, width, height)
 				const [xAdj, yAdj, widthAdj, heightAdj] = this.adjustPos(x, y, width, height)
+				// console.log('before:', x, y, width, height)
+				// console.log('after:', xAdj, yAdj, widthAdj, heightAdj)
+				const fistPos = this.fist.current.getBoundingClientRect();
+				// this.fist.current.style.left = xAdj + widthAdj / 2  - fistPos.width/2
+				// this.fist.current.style.top = yAdj + heightAdj /2 - fistPos.height/2
+
 				$(".fist").animate({ 
-					left: (xAdj + widthAdj)/2, 
-					top: (yAdj + heightAdj)/2}, 100);
+					left: xAdj + widthAdj / 2  - fistPos.width/2,
+					top: yAdj + heightAdj /2 - fistPos.height/2}, 1);
+
 				this.determineHit(xAdj, yAdj, widthAdj, heightAdj)
 			}
 			if (this.state.isVideo) {
@@ -87,6 +94,7 @@ export default class App extends React.Component {
 			}
 		});
 	}
+
 	getCoordinates() {
 		const target = this.targets.current.getBoundingClientRect();
 		console.log(target.x, target.y, target.width, target.height);
@@ -94,6 +102,8 @@ export default class App extends React.Component {
 	//1160 490
 	// 640 480
 	adjustPos(x, y, width, height){
+		console.log('screenwidth', this.screen.current.clientWidth, 'screenheight', this.screen.current.clientHeight);console.log('vidwidth',video.width, 'vidheight', video.height);
+
 		const widthAdjustment = this.screen.current.clientWidth / video.width
 		const heightAdjustment = this.screen.current.clientHeight / video.height
 		const xAdj = x * widthAdjustment
@@ -111,6 +121,7 @@ export default class App extends React.Component {
 		// const heightAdj = height * heightAdjustment
 
 		const targets = document.querySelectorAll(".target");
+		// const fistPos = this.fist.current.getBoundingClientRect();
 		targets.forEach(target => {
 			const targetPos = target.getBoundingClientRect();
 			if( xAdj <= targetPos.x && (xAdj + widthAdj) >= (targetPos.x + targetPos.width) && yAdj <= targetPos.y && (yAdj + heightAdj) >= (targetPos.y + targetPos.height) ) {
@@ -139,9 +150,6 @@ export default class App extends React.Component {
 		console.log('model loaded')
 		this.runDetection();
 		this.setState({ message: 'model loaded' })
-		// this.playGame();
-		// setInterval(step, this.state.gameSpeed);
-		// setInterval(this.addTarget, 5000)
 
 		setInterval(step, this.state.gameSpeed);
 		// cant access state inside setInterval
@@ -183,7 +191,7 @@ export default class App extends React.Component {
 			<div ref={this.screen} id='screen'>
 			<div className="title">Duck Hunt!</div>
 				<div className="score">Score: {this.state.score} / {this.state.nTargets}</div>
-				<img className="fist" src='/images/fist.png'></img>
+				<img className="fist" ref={this.fist} src='/images/fist.png'></img>
 				<div id='targets' ref={this.targets}></div>
 				<h1>{this.state.result}</h1>
 				<button onClick={this.toggleVideo} id="trackbutton" className="bx--btn bx--btn--secondary" type="button">

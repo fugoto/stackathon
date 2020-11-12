@@ -113,12 +113,13 @@ const modelParams = {
   scoreThreshold: 0.6 // confidence threshold for predictions.
 
 }; // have a fist icon
-// win result comes too early, fix that
+// win result comes too early, fix that. look at lose
 // fix the video turn on delay  -maybe need await?
 // have better bird fly angles
 // set background image
 // dictator heads
 // do dog
+// 2 fists
 
 const nTargets = 5; // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
 
@@ -137,7 +138,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       isVideo: false,
       message: "loading model...",
       coordinates: [],
-      range: 100,
+      // errorMargin: 100,
       nTargets: nTargets,
       gameSpeed: gameSpeed,
       score: 0,
@@ -145,6 +146,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     };
     this.targets = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
     this.screen = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
+    this.fist = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
     this.startVideo = this.startVideo.bind(this);
     this.toggleVideo = this.toggleVideo.bind(this);
     this.runDetection = this.runDetection.bind(this);
@@ -194,11 +196,16 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       if (predictions[0]) {
         const [x, y, width, height] = predictions[0].bbox; // console.log(x, y, width, height)
 
-        const [xAdj, yAdj, widthAdj, heightAdj] = this.adjustPos(x, y, width, height);
+        const [xAdj, yAdj, widthAdj, heightAdj] = this.adjustPos(x, y, width, height); // console.log('before:', x, y, width, height)
+        // console.log('after:', xAdj, yAdj, widthAdj, heightAdj)
+
+        const fistPos = this.fist.current.getBoundingClientRect(); // this.fist.current.style.left = xAdj + widthAdj / 2  - fistPos.width/2
+        // this.fist.current.style.top = yAdj + heightAdj /2 - fistPos.height/2
+
         $(".fist").animate({
-          left: xAdj,
-          top: yAdj
-        }, 100);
+          left: xAdj + widthAdj / 2 - fistPos.width / 2,
+          top: yAdj + heightAdj / 2 - fistPos.height / 2
+        }, 1);
         this.determineHit(xAdj, yAdj, widthAdj, heightAdj);
       }
 
@@ -216,6 +223,8 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
 
 
   adjustPos(x, y, width, height) {
+    console.log('screenwidth', this.screen.current.clientWidth, 'screenheight', this.screen.current.clientHeight);
+    console.log('vidwidth', video.width, 'vidheight', video.height);
     const widthAdjustment = this.screen.current.clientWidth / video.width;
     const heightAdjustment = this.screen.current.clientHeight / video.height;
     const xAdj = x * widthAdjustment;
@@ -232,7 +241,8 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     // const yAdj = y * heightAdjustment
     // const widthAdj = width * widthAdjustment
     // const heightAdj = height * heightAdjustment
-    const targets = document.querySelectorAll(".target");
+    const targets = document.querySelectorAll(".target"); // const fistPos = this.fist.current.getBoundingClientRect();
+
     targets.forEach(target => {
       const targetPos = target.getBoundingClientRect();
 
@@ -262,10 +272,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     this.runDetection();
     this.setState({
       message: 'model loaded'
-    }); // this.playGame();
-    // setInterval(step, this.state.gameSpeed);
-    // setInterval(this.addTarget, 5000)
-
+    });
     setInterval(_server_uckHunt__WEBPACK_IMPORTED_MODULE_2__["default"], this.state.gameSpeed); // cant access state inside setInterval
 
     const self = this;
@@ -315,11 +322,12 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       className: "score"
     }, "Score: ", this.state.score, " / ", this.state.nTargets), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
       className: "fist",
+      ref: this.fist,
       src: "/images/fist.png"
     }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       id: "targets",
       ref: this.targets
-    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, this.state.result, "!!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, this.state.result), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
       onClick: this.toggleVideo,
       id: "trackbutton",
       className: "bx--btn bx--btn--secondary",
