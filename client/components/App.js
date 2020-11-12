@@ -8,20 +8,25 @@ const modelParams = {
     iouThreshold: 0.5,      // ioU threshold for non-max suppression
     scoreThreshold: 0.6,    // confidence threshold for predictions.
 }
-// have a fist icon
-// win result comes too early, fix that. look at lose
-// fix the video turn on delay  -maybe need await?
-// have better bird fly angles
-// set background image
+// win result comes too early, fix that. look at lose - NEED TO LOOK AT THIS, start line 170
+// fist should not appear in beginning
+// bird explode
+// do dog and grass
+//awkward when bird is created
 // dictator heads
-// do dog
-// 2 fists
+// logo
+// levels: speed, fist size, frequency of new target created
+// 2 fists - xtra credit
 const nTargets = 5 // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
 const gameSpeed = 500 // later refactor on child component Options state
 let model = null
 const video = document.getElementById("myvideo");
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
+let targets = document.querySelectorAll(".target");
+
+// let targets = document.querySelectorAll(".target");
+
 let trackButton = document.getElementById("trackbutton");
 let updateNote = document.getElementById("updatenote");
 
@@ -120,8 +125,6 @@ export default class App extends React.Component {
 		// const widthAdj = width * widthAdjustment
 		// const heightAdj = height * heightAdjustment
 
-		const targets = document.querySelectorAll(".target");
-		// const fistPos = this.fist.current.getBoundingClientRect();
 		targets.forEach(target => {
 			const targetPos = target.getBoundingClientRect();
 			if( xAdj <= targetPos.x && (xAdj + widthAdj) >= (targetPos.x + targetPos.width) && yAdj <= targetPos.y && (yAdj + heightAdj) >= (targetPos.y + targetPos.height) ) {
@@ -137,20 +140,19 @@ export default class App extends React.Component {
 		const initialPos = Math.floor(this.screen.current.clientWidth * Math.random())
 		console.log(targetDirection, initialPos)
 		$('#targets').append(`<div class="target ${targetDirection}" style="${targetDirection}: ${initialPos}px"></div>`)
-		// this.setState({createdTargets: this.state.createdTargets + 1 })
 		}
 
 	async startGame(){
 		console.log('starting game')
-		const [ videoStatus, lmodel ] = await Promise.all([
-			this.startVideo(),
-			handTrack.load(modelParams)
-		]);
-		model = lmodel
-		console.log('model loaded')
-		this.runDetection();
-		this.setState({ message: 'model loaded' })
-
+		// DO NOT DELETE BELOW
+		// const [ videoStatus, lmodel ] = await Promise.all([
+		// 	this.startVideo(),
+		// 	handTrack.load(modelParams)
+		// ]);
+		// model = lmodel
+		// console.log('model loaded')
+		// this.runDetection();
+		// this.setState({ message: 'model loaded' })
 		setInterval(step, this.state.gameSpeed);
 		// cant access state inside setInterval
 		const self = this;
@@ -158,33 +160,38 @@ export default class App extends React.Component {
 		let createdTargets = 0;
 		const createTargets = setInterval(function(){
 			self.addTarget();
+			self.checkGameEnd()
 			createdTargets++
 			console.log('created',createdTargets, 'total',nTargets)
-			if(createdTargets >= nTargets) {
-				clearInterval(createTargets)		
+			if(createdTargets === nTargets && self.checkGameEnd()) {
+				clearInterval(createTargets)
 				createdTargets = 0
-				// result
-				if((self.state.score / self.state.nTargets) > .6) {
-					self.setState({result: 'YOU WIN'})
-				}
-				else {
-					self.setState({result: 'YOU LOSE'})
-				}
-			}	
-		}, 5000)
+				// while(true){
+				// 	if(self.checkGameEnd()){
+						if((self.state.score / self.state.nTargets) >= .6) {
+							self.setState({result: 'YOU WIN'})
+						}
+						else {
+							self.setState({result: 'YOU LOSE'})
+						}
+					}
+				// }
+			// }	
+		}, 8000)
+		
+		// result
 	}
-	// playGame(){
-	// 	setInterval(step, this.state.gameSpeed);
-	// 	while(this.state.createdTargets <= this.state.nTargets) {
-	// 		setInterval(this.addTarget, 5000)
-	// 	}
-	// 	if(this.state.score / this.state.nTargets > .6) {
-	// 		this.setState({result: 'YOU WIN'})
-	// 	}
-	// 	else {
-	// 		this.setState({result: 'YOU LOSE'})
-	// 	}
-	// }
+
+	checkGameEnd(){
+		// if (!targets.length) return false
+		for(let i = 0; i < targets.length; i ++) {
+			let target = targets[i]
+			console.log(target)
+			if(target.style.display !== 'none') return false
+		}
+		return true
+	}
+
 	render() {
 		return(
 			<>

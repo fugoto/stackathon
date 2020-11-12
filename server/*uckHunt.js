@@ -1,19 +1,4 @@
 'use strict';
-// var jsdom = require("jsdom");
-// const { JSDOM } = jsdom;
-// const { window } = new JSDOM();
-// const { document } = (new JSDOM('')).window;
-// global.document = document;
-// import {$,jQuery} from './libs/jquery/dist/jquery.js';
-// import * as $ from 'jquery'
-// export for others scripts to use
-// window.$ = $;
-// window.jQuery = jQuery;
-
-// import * as JQuery from 'jquery'
-// const $ = JQuery(window);
-
-// jshint devel:true
 console.log('Welcome to *uck Hunt!');
 
 // timing variables
@@ -39,8 +24,8 @@ function updateTarget(target) {
   // Set the vertical position of the duck.
   // Note that we set bottom equal to top to move the duck up exactly 1 duck
   // height and this is "smoothed" out by the CSS3 transition settings.
-  var newBottom = $(document).height() - target.offset().top;
-  target.css('bottom', newBottom);
+  // var newBottom = $(document).height() - target.offset().top;
+  // target.css('bottom', newBottom);
 
   // flap those wings
   target.toggleClass('flap');
@@ -49,6 +34,7 @@ function updateTarget(target) {
   if (target.offset().top < 0) {
     target.fadeOut(lostTargetFadeOutTime, function() {
       target.removeClass('left right');
+      // target.css('display','none')
       // TODO: recycle the duck
     });
   }
@@ -70,14 +56,29 @@ export default function step() {
   // move each left facing duck a little further to the left
   $('.target.left').each(function (i, target) {
     target = $(target);
-    target.css('left', target.offset().left - 30);
+    target.animate({
+      left: '-=100',
+      top: '-=50'
+    }, 1)
+  //   target.css({
+  //     'left': target.offset().left - 50,
+  //     'top': target.offset().top - 10,
+  // });
   });
 
   // move each right facing duck a little further to the right
   $('.target.right').each(function (i, target) {
     target = $(target);
-    target.css('left', target.offset().left + 30);
+    target.animate({
+      left: '+=100',
+      top: '-=50'
+    }, 1)
+    // target.css({
+    //   'left': target.offset().left + 50,
+    //   'top': target.offset().top -10,
+    // });
   });
+
 }
 
 // get everything going.

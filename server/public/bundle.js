@@ -112,14 +112,15 @@ const modelParams = {
   // ioU threshold for non-max suppression
   scoreThreshold: 0.6 // confidence threshold for predictions.
 
-}; // have a fist icon
-// win result comes too early, fix that. look at lose
-// fix the video turn on delay  -maybe need await?
-// have better bird fly angles
-// set background image
+}; // win result comes too early, fix that. look at lose
+// fist should not appear in beginning
+// bird explode
+// do dog and grass
+//awkward when bird is created
 // dictator heads
-// do dog
-// 2 fists
+// logo
+// levels: speed, fist size, frequency of new target created
+// 2 fists - xtra credit
 
 const nTargets = 5; // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
 
@@ -129,6 +130,8 @@ let model = null;
 const video = document.getElementById("myvideo");
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
+let targets = document.querySelectorAll(".target"); // let targets = document.querySelectorAll(".target");
+
 let trackButton = document.getElementById("trackbutton");
 let updateNote = document.getElementById("updatenote");
 class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
@@ -241,8 +244,6 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     // const yAdj = y * heightAdjustment
     // const widthAdj = width * widthAdjustment
     // const heightAdj = height * heightAdjustment
-    const targets = document.querySelectorAll(".target"); // const fistPos = this.fist.current.getBoundingClientRect();
-
     targets.forEach(target => {
       const targetPos = target.getBoundingClientRect();
 
@@ -261,18 +262,20 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     const targetDirection = directions[Math.floor(Math.random() * directions.length)];
     const initialPos = Math.floor(this.screen.current.clientWidth * Math.random());
     console.log(targetDirection, initialPos);
-    $('#targets').append(`<div class="target ${targetDirection}" style="${targetDirection}: ${initialPos}px"></div>`); // this.setState({createdTargets: this.state.createdTargets + 1 })
+    $('#targets').append(`<div class="target ${targetDirection}" style="${targetDirection}: ${initialPos}px"></div>`);
   }
 
   async startGame() {
-    console.log('starting game');
-    const [videoStatus, lmodel] = await Promise.all([this.startVideo(), handtrackjs__WEBPACK_IMPORTED_MODULE_1__["load"](modelParams)]);
-    model = lmodel;
-    console.log('model loaded');
-    this.runDetection();
-    this.setState({
-      message: 'model loaded'
-    });
+    console.log('starting game'); // DO NOT DELETE BELOW
+    // const [ videoStatus, lmodel ] = await Promise.all([
+    // 	this.startVideo(),
+    // 	handTrack.load(modelParams)
+    // ]);
+    // model = lmodel
+    // console.log('model loaded')
+    // this.runDetection();
+    // this.setState({ message: 'model loaded' })
+
     setInterval(_server_uckHunt__WEBPACK_IMPORTED_MODULE_2__["default"], this.state.gameSpeed); // cant access state inside setInterval
 
     const self = this;
@@ -280,14 +283,16 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     let createdTargets = 0;
     const createTargets = setInterval(function () {
       self.addTarget();
+      self.checkGameEnd();
       createdTargets++;
       console.log('created', createdTargets, 'total', nTargets);
 
-      if (createdTargets >= nTargets) {
+      if (createdTargets === nTargets && self.checkGameEnd()) {
         clearInterval(createTargets);
-        createdTargets = 0; // result
+        createdTargets = 0; // while(true){
+        // 	if(self.checkGameEnd()){
 
-        if (self.state.score / self.state.nTargets > .6) {
+        if (self.state.score / self.state.nTargets >= .6) {
           self.setState({
             result: 'YOU WIN'
           });
@@ -296,21 +301,22 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
             result: 'YOU LOSE'
           });
         }
-      }
-    }, 5000);
-  } // playGame(){
-  // 	setInterval(step, this.state.gameSpeed);
-  // 	while(this.state.createdTargets <= this.state.nTargets) {
-  // 		setInterval(this.addTarget, 5000)
-  // 	}
-  // 	if(this.state.score / this.state.nTargets > .6) {
-  // 		this.setState({result: 'YOU WIN'})
-  // 	}
-  // 	else {
-  // 		this.setState({result: 'YOU LOSE'})
-  // 	}
-  // }
+      } // }
+      // }	
 
+    }, 8000); // result
+  }
+
+  checkGameEnd() {
+    // if (!targets.length) return false
+    for (let i = 0; i < targets.length; i++) {
+      let target = targets[i];
+      console.log(target);
+      if (target.style.display !== 'none') return false;
+    }
+
+    return true;
+  }
 
   render() {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
@@ -89076,19 +89082,7 @@ module.exports = function(module) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return step; });
- // var jsdom = require("jsdom");
-// const { JSDOM } = jsdom;
-// const { window } = new JSDOM();
-// const { document } = (new JSDOM('')).window;
-// global.document = document;
-// import {$,jQuery} from './libs/jquery/dist/jquery.js';
-// import * as $ from 'jquery'
-// export for others scripts to use
-// window.$ = $;
-// window.jQuery = jQuery;
-// import * as JQuery from 'jquery'
-// const $ = JQuery(window);
-// jshint devel:true
+
 
 console.log('Welcome to *uck Hunt!'); // timing variables
 
@@ -89110,16 +89104,17 @@ function updateTarget(target) {
   } // Set the vertical position of the duck.
   // Note that we set bottom equal to top to move the duck up exactly 1 duck
   // height and this is "smoothed" out by the CSS3 transition settings.
+  // var newBottom = $(document).height() - target.offset().top;
+  // target.css('bottom', newBottom);
+  // flap those wings
 
-
-  var newBottom = $(document).height() - target.offset().top;
-  target.css('bottom', newBottom); // flap those wings
 
   target.toggleClass('flap'); // if duck has escaped, fade it out and recycle it.
 
   if (target.offset().top < 0) {
     target.fadeOut(lostTargetFadeOutTime, function () {
-      target.removeClass('left right'); // TODO: recycle the duck
+      target.removeClass('left right'); // target.css('display','none')
+      // TODO: recycle the duck
     });
   }
 } // update the score, duck positions, orientations, and state
@@ -89139,12 +89134,24 @@ function step() {
 
   $('.target.left').each(function (i, target) {
     target = $(target);
-    target.css('left', target.offset().left - 30);
+    target.animate({
+      left: '-=100',
+      top: '-=50'
+    }, 1); //   target.css({
+    //     'left': target.offset().left - 50,
+    //     'top': target.offset().top - 10,
+    // });
   }); // move each right facing duck a little further to the right
 
   $('.target.right').each(function (i, target) {
     target = $(target);
-    target.css('left', target.offset().left + 30);
+    target.animate({
+      left: '+=100',
+      top: '-=50'
+    }, 1); // target.css({
+    //   'left': target.offset().left + 50,
+    //   'top': target.offset().top -10,
+    // });
   });
 } // get everything going.
 // $(function() {
