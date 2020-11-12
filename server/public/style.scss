@@ -1,29 +1,30 @@
 h1 {
     color: limegreen
   }
-    .highlighter {
-      background: rgba(0, 255, 0, 0.25);
-      border: 1px dashed #fff;
-      z-index: 1;
-      position: absolute;
-    }
-  
-    body {
-      padding: 20px;
+  .highlighter {
+    background: rgba(0, 255, 0, 0.25);
+    border: 1px dashed #fff;
+    z-index: 1;
+    position: absolute;
   }
+
+  body {
+    padding: 20px;
+}
   
-  .p20 {
-      padding: 20px;
-  }
-  
-  .canvasbox {
-      border-radius: 3px;
-      width: 100vw;
-      height: 100vh;
-      border-bottom: 3px solid #0063FF;
-      box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 4px 10px 0 #00000030;
-      z-index: -1;
-  }
+.p20 {
+    padding: 20px;
+}
+
+.canvasbox {
+    border-radius: 3px;
+    width: 100vw;
+    height: 100vh;
+    border-bottom: 3px solid #0063FF;
+    box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 4px 10px 0 #00000030;
+    z-index: -2;
+    display: none;
+}
   
   .mb10 {
       margin-bottom: 10px
@@ -65,15 +66,11 @@ h1 {
   }
   
   #frame video {
-    /* position: absolute;
-    top: 0;
-    left: 0;
-    height: auto;
-    width: 100%; */
-    
     object-fit: fill;
     display: none;
     background-color: gray;
+    // height: 100vh;
+    // width: 100vw;
   }
   
   img {
@@ -87,9 +84,14 @@ h1 {
     justify-content: center;
     width: 100vw;
     height: 100vh;
-    /* background-color: lightpink; */
   }
-  
+
+  #stage {
+    width: 100vw;
+    height: 100vh;
+    z-index: -3;
+    background-image: url('/images/stage.png');
+  }
 
 .score {
     position: absolute;
@@ -141,4 +143,30 @@ h1 {
       z-index: -1;
       background-image: url('/images/shot.png');
     }
+  }
+
+  .fist{
+    position: absolute;
+    // width: 200px;
+    // height: auto;
+  }
+
+  .fistImage {
+    // position: absolute;
+    // max-width:100px;
+    // max-height:auto;
+    width: 100%;
+    height: auto;
+    // background-image: url('/images/fist.png');
+    // object-fit: fill;
+    z-index: -1;
+    opacity: 0.6;
+  }
+
+  .result {
+    color: white;
+  }
+
+  #start-game {
+    z-index: 50
   }

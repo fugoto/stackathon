@@ -23,7 +23,8 @@ body {
   height: 100vh;
   border-bottom: 3px solid #0063FF;
   box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 4px 10px 0 #00000030;
-  z-index: -1;
+  z-index: -2;
+  display: none;
 }
 
 .mb10 {
@@ -66,11 +67,6 @@ body {
 }
 
 #frame video {
-  /* position: absolute;
-  top: 0;
-  left: 0;
-  height: auto;
-  width: 100%; */
   object-fit: fill;
   display: none;
   background-color: gray;
@@ -87,7 +83,13 @@ img {
   justify-content: center;
   width: 100vw;
   height: 100vh;
-  /* background-color: lightpink; */
+}
+
+#stage {
+  width: 100vw;
+  height: 100vh;
+  z-index: -3;
+  background-image: url("/images/stage.png");
 }
 
 .score {
@@ -132,4 +134,23 @@ img {
 .target.shot {
   z-index: -1;
   background-image: url("/images/shot.png");
+}
+
+.fist {
+  position: absolute;
+}
+
+.fistImage {
+  width: 100%;
+  height: auto;
+  z-index: -1;
+  opacity: 0.6;
+}
+
+.result {
+  color: white;
+}
+
+#start-game {
+  z-index: 50;
 }
