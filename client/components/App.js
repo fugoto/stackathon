@@ -1,6 +1,8 @@
 import React from "react";
 import * as handTrack from 'handtrackjs';
 import step from '../../server/*uckHunt'
+import DogIntro from './DogIntro'
+import DogLaugh from './DogLaugh'
 
 const modelParams = {
     flipHorizontal: true,   // flip e.g for video  
@@ -11,16 +13,16 @@ const modelParams = {
 //awkward when bird is created (initial flight)
 // animation needs to be faster and smoother
 // bird explode
-// do dog
 // set favicon
 // dictator heads - add more
 // logo
 //scoreboard
+// fix dog position
 // sound
 // levels: speed, fist size, frequency of new target created
 // 2 fists - xtra credit
 const nTargets = 3 // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
-const gameSpeed = 400 // later refactor on child component Options state
+const gameSpeed = 500 // later refactor on child component Options state
 let model = null
 const video = document.getElementById("myvideo");
 const canvas = document.getElementById("canvas");
@@ -150,7 +152,7 @@ export default class App extends React.Component {
 	
 	async startGame(){
 		console.log('starting game')
-		this.setState({ message: 'PLEASE WAIT...' })
+		this.setState({ message: 'PLEASE WAIT...', score: 0, result: '', })
 		// DO NOT DELETE BELOW if commented out!!!!!!!!!!
 		const [ videoStatus, lmodel ] = await Promise.all([
 			this.startVideo(),
@@ -222,8 +224,9 @@ export default class App extends React.Component {
 						<button id='start-game' onClick={this.startGame}>PLAY</button>
 						<button onClick={this.toggleVideo} id="trackbutton" className="bx--btn bx--btn--secondary" type="button">Toggle Video</button>
 					</div>
-
 				</div>
+				<DogIntro></DogIntro>
+				{ this.state.result === 'YOU LOSE' ? <DogLaugh></DogLaugh> : null}
 			</div>
 		  </>
 		)

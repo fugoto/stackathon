@@ -207,13 +207,16 @@ h1 {
     justify-content: center;
   }
 
+.checkbox {
+  // z-index: -500;
+  // position: absolute;
+}
 
+// from https://codepen.io/vaielab/pen/yoKEF?editors=1100
   @keyframes dogMove {
     from {left:0px;}
     to {left:450px;}
   }
-  
-  
   
   @keyframes dogWalk {
     0% { background-position:0px 0px; }
@@ -252,14 +255,11 @@ h1 {
     100% { background-position: 1000px 1000px; }/*Hide*/
   }
   
-  
-  
   @keyframes dogLaugh {
     0% { background-position:-360px -110px; }
     50% { background-position:-480px -110px; }
     100% { background-position:-360px -110px; }
   }
-  
   
   @keyframes dogShow {
     0% { top:560px; }
@@ -268,225 +268,191 @@ h1 {
     100% { top:560px; }
   }
   
+  // @keyframes lvlStart {
+  //   from {left:5000px;}
+  //   to {left:0px;}
+  // }
   
-  @keyframes lvlStart {
-    from {left:5000px;}
-    to {left:0px;}
-  }
+  // @keyframes lvlEnd {
+  //   from {left:0px;}
+  //   to {left:5000px;}
+  // }
   
+  // @keyframes duckFall {
+  //   from { top:0px; }
+  //   to { top: 769px; }
+  // }
   
-  @keyframes lvlEnd {
-    from {left:0px;}
-    to {left:5000px;}
-  }
+  // #shootingArea {
+  //   width:1280px;
+  //   height:550px;
+  //   overflow:hidden;
   
-
+  //   & > div {
+  //     position:absolute;
+  //     width:1280px;
+  //     height:550px;
+  //     left:5000px;
+  //     overflow:hidden;
   
-  @keyframes duckFall {
-    from { top:0px; }
-    to { top: 769px; }
-  }
+  //     & > div {
+  //       position:relative;	
+  //       width:100%;
+  //       height:100%;
   
-
+  //       & > label {
+  //         position:absolute;
+  //         top:0;
+  //         left:0;
+  //         height:550px;
+  //         width:1280px;				
+  //       }
+  //     }
   
-  #shootingArea {
-    width:1280px;
-    height:550px;
-    overflow:hidden;
-  
-    & > div {
-      position:absolute;
-      width:1280px;
-      height:550px;
-      left:5000px;
-      overflow:hidden;
-  
-      & > div {
-        position:relative;	
-        width:100%;
-        height:100%;
-  
-        & > label {
-          position:absolute;
-          top:0;
-          left:0;
-          height:550px;
-          width:1280px;				
-        }
-      }
-  
-    }
-  }
+  //   }
+  // }
   
   
   
-  #shootingArea > div > div > div > label, #shootingArea > div > div > div > span {
-    background: url('https://raw.githubusercontent.com/vaielab/DuckHuntCss/master/sprite.png') no-repeat;
-    height:76px;
-    display:block;
-    width:70px;
-    position:relative;
-    background-position:0px -220px;
+  // #shootingArea > div > div > div > label, #shootingArea > div > div > div > span {
+  //   background: url('https://raw.githubusercontent.com/vaielab/DuckHuntCss/master/sprite.png') no-repeat;
+  //   height:76px;
+  //   display:block;
+  //   width:70px;
+  //   position:relative;
+  //   background-position:0px -220px;
     
-    animation: duckWing 200ms infinite step-end alternate;
-  }
+  //   animation: duckWing 200ms infinite step-end alternate;
+  // }
   
-  #shootingArea > div > div > div > span {
-    display:none;
-  }
+  // #shootingArea > div > div > div > span {
+  //   display:none;
+  // }
   
+  // .console {
+  //   height:56px;
+  //   background-color:#000;
+  //   border: 1px solid #7FCE16;	
+  //   position:absolute;
+  //   bottom:10px;
+  //   border-radius: 5px;
+  //   display:relative;
+  //   overflow:hidden;
+  // }
   
+  // #bullets {
+  //   width: 78px;
+  //   left: 305px;
   
+  //   & > div {
+  //     position:relative;
+  //     margin-left:9px;
+  //     margin-top:5px;
   
+  //     & > div {
+  //       width: 78px;
+  //       height: 56px;
+  //       position:absolute;
+  //       left:5000px;
+  //       top:0;
+  //     }
   
+  //   }
   
+  //   div span {
+  //     background: #000 url('https://raw.githubusercontent.com/vaielab/DuckHuntCss/master/sprite.png') no-repeat left top;
+  //     display:block;
+  //     height:20px;
+  //     width:20px;
+  //     float:left;
+  //     background-position: 0px -557px;		
+  //   }
   
-  
-  
-  .console {
-    height:56px;
-    background-color:#000;
-    border: 1px solid #7FCE16;	
-    position:absolute;
-    bottom:10px;
-    border-radius: 5px;
-    display:relative;
-    overflow:hidden;
-  }
-  
-  #bullets {
-    width: 78px;
-    left: 305px;
-  
-    & > div {
-      position:relative;
-      margin-left:9px;
-      margin-top:5px;
-  
-      & > div {
-        width: 78px;
-        height: 56px;
-        position:absolute;
-        left:5000px;
-        top:0;
-      }
-  
-    }
-  
-    div span {
-      background: #000 url('https://raw.githubusercontent.com/vaielab/DuckHuntCss/master/sprite.png') no-repeat left top;
-      display:block;
-      height:20px;
-      width:20px;
-      float:left;
-      background-position: 0px -557px;		
-    }
-  
-    & > span {
-      color: #0099FF;
-      position:relative;
-      top:25px;
-      left:7px;
-      font-weight:bold;
-      letter-spacing:3px;	
-    }
+  //   & > span {
+  //     color: #0099FF;
+  //     position:relative;
+  //     top:25px;
+  //     left:7px;
+  //     font-weight:bold;
+  //     letter-spacing:3px;	
+  //   }
     
-  }
+  // }
   
+  // #hits {
+  //   width:313px;
+  //   left: 405px;	
   
+  //   & > span {
+  //     color: #33CC33;
+  //     letter-spacing:5px;
+  //     font-size:28px;
+  //     margin-left:5px;
+  //     vertical-align:top;	
+  //   }
   
+  //   & > div {
+  //     display:inline-block;	
+  //     width:230px;
+  //     height:45px;
   
+  //     & > span {
+  //       background: #000 url('https://raw.githubusercontent.com/vaielab/DuckHuntCss/master/sprite.png') no-repeat left top;
+  //       display:block;
+  //       height:20px;
+  //       width:20px;
+  //       float:left;
+  //       background-position: -50px -557px;	
+  //       margin-top:10px;	
+  //       margin-right:3px;
+  //     }
   
+  //   }
+  // }
   
-  #hits {
-    width:313px;
-    left: 405px;	
+  // #points {
+  //   width: 142px;
+  //   left:740px;
   
-    & > span {
-      color: #33CC33;
-      letter-spacing:5px;
-      font-size:28px;
-      margin-left:5px;
-      vertical-align:top;	
-    }
-  
-    & > div {
-      display:inline-block;	
-      width:230px;
-      height:45px;
-  
-      & > span {
-        background: #000 url('https://raw.githubusercontent.com/vaielab/DuckHuntCss/master/sprite.png') no-repeat left top;
-        display:block;
-        height:20px;
-        width:20px;
-        float:left;
-        background-position: -50px -557px;	
-        margin-top:10px;	
-        margin-right:3px;
-      }
-  
-    }
-  }
-  
-  
-  
-  
-  
-  #points {
-    width: 142px;
-    left:740px;
-  
-    div {
-      position:absolute;
-      background-color:#000;
-      color:#fff;	
-      width:10000px;
+  //   div {
+  //     position:absolute;
+  //     background-color:#000;
+  //     color:#fff;	
+  //     width:10000px;
     
-      span {
-        display:block;
-        float:left;
-        width:142px;
-        font-size:25px;
-        letter-spacing:3px;
-        text-align:center;
-        font-family:"Times New Roman";
-      }
+  //     span {
+  //       display:block;
+  //       float:left;
+  //       width:142px;
+  //       font-size:25px;
+  //       letter-spacing:3px;
+  //       text-align:center;
+  //       font-family:"Times New Roman";
+  //     }
   
-    }
+  //   }
   
-    & > span {
-      position:relative;
-      top:25px;
-      left:22px;
+  //   & > span {
+  //     position:relative;
+  //     top:25px;
+  //     left:22px;
     
-      color:#fff;
-      font-size:25px;
-      letter-spacing:3px;
-      text-align:center;
-      font-family:"Times New Roman";
-    }
-  }
-  
-  
-  
-  
-  
-  
-  
-  
-  
+  //     color:#fff;
+  //     font-size:25px;
+  //     letter-spacing:3px;
+  //     text-align:center;
+  //     font-family:"Times New Roman";
+  //   }
+  // }
   
   #dogIntro {
-    position:absolute;
-    bottom: 120px;
+    position: fixed;
+    bottom: 50px;
     z-index:1;
-    background: url('https://raw.githubusercontent.com/vaielab/DuckHuntCss/master/sprite.png') no-repeat;
+    background: url('/images/dogonly.png') no-repeat;
     width: 120px; 
     height: 100px;
   }
-  
-  
   
   #dogLaugh {
     width:1280px;
@@ -508,24 +474,18 @@ h1 {
   
       & > span:nth-child(1) {
         display:block;
-        background: url('https://raw.githubusercontent.com/vaielab/DuckHuntCss/master/sprite.png') no-repeat;
+        background: url('/images/dogonly.png') no-repeat;
     
         animation: dogLaugh 200ms infinite steps(1) alternate;
       }
   
       & > span:nth-child(2) {
         display:none;
-        background: url('https://raw.githubusercontent.com/vaielab/DuckHuntCss/master/sprite.png') no-repeat;
+        background: url('/images/dogonly.png') no-repeat;
         background-position:-600px -0px;
       }
     }
   }
-  
-  
-  
-  
-  
-  
   
   @for $i from 1 through 10 {
     #bc#{$i}-1:checked ~ #shootingArea > div:nth-child(#{$i}) > div > label:nth-child(1), 
@@ -600,18 +560,13 @@ h1 {
     }
   
     #dogLaugh > div:nth-child(#{$i}) {
-      animation: dogShow 4s #{10 + (($i - 1) * 9)}s;
+      animation: dogShow 4s;
     }
+    // #{10 + (($i - 1) * 9)}s
   
     $timer: $timer + 9;
   
   }
-  
-  
-  
-  
-  
-  
   
   
   
