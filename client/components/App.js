@@ -8,11 +8,10 @@ const modelParams = {
     iouThreshold: 0.5,      // ioU threshold for non-max suppression
     scoreThreshold: 0.6,    // confidence threshold for predictions.
 }
-// fist is off from bounding box - i may not be able to put the width on state
 // fist should not appear in beginning
+//awkward when bird is created (initial flight)
 // bird explode
 // do dog and grass
-//awkward when bird is created (initial flight)
 // set favicon
 // dictator heads
 // logo
@@ -82,17 +81,11 @@ export default class App extends React.Component {
 		model.detect(video).then(predictions => {
 			// console.log("Predictions: ", predictions);
 			model.renderPredictions(predictions, canvas, context, video);
-			//predictions[0]: [ x, y, width, height ]
+			// predictions[0]: [ x, y, width, height ]
 			if(predictions[0]) {
 				const [ x, y, width, height ] = predictions[0].bbox
-				// console.log(x, y, width, height)
 				const [xAdj, yAdj, widthAdj, heightAdj] = this.adjustPos(x, y, width, height)
-				// console.log('before:', x, y, width, height)
-				// console.log('after:', xAdj, yAdj, widthAdj, heightAdj)
 				const fistPos = this.fist.current.getBoundingClientRect();
-				// this.fist.current.style.left = xAdj + widthAdj / 2  - fistPos.width/2
-				// this.fist.current.style.top = yAdj + heightAdj /2 - fistPos.height/2
-				console.log(fistPos)
 				$(".fist").animate({ 
 					left: xAdj + widthAdj / 2  - fistPos.width/2,
 					top: yAdj + heightAdj /2 - fistPos.height/2}, 1);
@@ -112,7 +105,7 @@ export default class App extends React.Component {
 	//1160 490
 	// 640 480
 	adjustPos(x, y, width, height){
-		console.log('screenwidth', this.screen.current.clientWidth, 'screenheight', this.screen.current.clientHeight);console.log('vidwidth',video.width, 'vidheight', video.height);
+		// console.log('screenwidth', this.screen.current.clientWidth, 'screenheight', this.screen.current.clientHeight);console.log('vidwidth',video.width, 'vidheight', video.height);
 
 		const widthAdjustment = this.screen.current.clientWidth / video.width
 		const heightAdjustment = this.screen.current.clientHeight / video.height
@@ -147,7 +140,6 @@ export default class App extends React.Component {
 
 	async startGame(){
 		console.log('starting game')
-		this.setState({inPlay: true})
 		// DO NOT DELETE BELOW if commented out!!!!!!!!!!
 		const [ videoStatus, lmodel ] = await Promise.all([
 			this.startVideo(),
@@ -156,7 +148,7 @@ export default class App extends React.Component {
 		model = lmodel
 		console.log('model loaded')
 		this.runDetection();
-		this.setState({ message: 'model loaded' })
+		this.setState({ message: 'model loaded', inPlay: true })
 		setInterval(step, this.state.gameSpeed);
 
 		// defining "self" becuase cant access state inside setInterval
@@ -175,19 +167,20 @@ export default class App extends React.Component {
 				else {
 					self.setState({result: 'YOU LOSE'})
 				}
+				self.setState({ inPlay: false })
 				clearInterval(createTargets)	
 			}
 		}, 5000)
 	}
 	
-	result() {
-		if((self.state.score / self.state.nTargets) >= .6) {
-			self.setState({result: 'YOU WIN'})
-		}
-		else {
-			self.setState({result: 'YOU LOSE'})
-		}
-	}
+	// result() {
+	// 	if((self.state.score / self.state.nTargets) >= .6) {
+	// 		self.setState({result: 'YOU WIN'})
+	// 	}
+	// 	else {
+	// 		self.setState({result: 'YOU LOSE'})
+	// 	}
+	// }
 	checkGameEnd(){
 		let targets = document.querySelectorAll(".target");
 			if(!targets.length) return false
@@ -208,7 +201,11 @@ export default class App extends React.Component {
 				{/* <div className="fist" ref={this.fist} style={{width: this.state.fistWidth}}>
 					<img className='fistImage' src='/images/fist.png'></img>
 				</div> */}
-				<img className="fist" src='/images/fist.png' ref={this.fist} style={{width: this.state.fistWidth, height: this.state.fistHeight}}></img>
+				<img 
+					className="fist" src='/images/fist.png' 
+					ref={this.fist}  
+					style={{width: this.state.fistWidth, height: this.state.fistHeight, display: !this.state.inPlay ? 'none': 'inline'}}>
+				</img>
 				{/* style={{width: this.state.fistWidth, height: this.state.fistHeight}} */}
 				<div id='targets' ref={this.targets}></div>
 				<h1 className='result'>{this.state.result}</h1>
