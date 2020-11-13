@@ -1,3 +1,8 @@
+* {
+  font-family: "Press Start 2P", cursive;
+  color: white;
+}
+
 h1 {
   color: limegreen;
 }
@@ -79,6 +84,7 @@ img {
 
 #screen {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100vw;
@@ -105,16 +111,7 @@ img {
   top: 10px;
   right: 30px;
   font-size: 2em;
-  font-family: Tahoma, Geneva, sans-serif;
-  color: red;
-}
-
-.title {
-  position: absolute;
-  top: 10px;
-  left: 30px;
-  font-size: 2em;
-  font-family: Tahoma, Geneva, sans-serif;
+  color: white;
 }
 
 .target {
@@ -158,6 +155,22 @@ img {
   z-index: 50;
   display: block;
   width: 100%;
+  font-family: "Press Start 2P", cursive;
+  padding: 10px;
+  font-size: 30px;
+  margin: 10px;
+  background-color: #42f5e6;
+  border: 5px orange solid;
+}
+
+#target-options {
+  display: flex;
+}
+
+.target-name {
+  text-align: center;
+  margin-bottom: 0;
+  color: white;
 }
 
 .target-option {
@@ -165,22 +178,28 @@ img {
   border: solid 5px white;
   padding: 10px;
   margin: 20px;
+  background: #42f5e6;
 }
 
 .selected {
-  border: solid 5px red;
+  border: solid 5px orange;
 }
 
 #setup {
-  display: flex;
   flex-direction: column;
-  align-items: baseline;
+  align-items: center;
+}
+
+#logo {
+  width: 70%;
+  height: auto;
 }
 
 #play-buttons {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  width: 100%;
 }
 
 @keyframes dogMove {

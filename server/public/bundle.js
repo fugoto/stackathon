@@ -119,16 +119,17 @@ const modelParams = {
 }; //awkward when bird is created (initial flight)
 // animation needs to be faster and smoother
 // bird explode
+// sound bite of them going down
+// dog needs to go after game starts
 // set favicon
 // dictator heads - add more
-// logo
 //scoreboard
 // fix dog position
 // sound
 // levels: speed, fist size, frequency of new target created
 // 2 fists - xtra credit
 
-const nTargets = 3; // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
+const nTargets = 5; // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
 
 const gameSpeed = 500; // later refactor on child component Options state
 
@@ -274,51 +275,55 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
   }
 
   async startGame() {
-    console.log('starting game');
-    this.setState({
-      message: 'PLEASE WAIT...',
-      score: 0,
-      result: ''
-    }); // DO NOT DELETE BELOW if commented out!!!!!!!!!!
+    if (!this.state.selectedTarget.length) this.setState({
+      message: "Please select a *uck"
+    });else {
+      console.log('starting game');
+      this.setState({
+        message: 'PLEASE WAIT...',
+        score: 0,
+        result: ''
+      }); // DO NOT DELETE BELOW if commented out!!!!!!!!!!
 
-    const [videoStatus, lmodel] = await Promise.all([this.startVideo(), handtrackjs__WEBPACK_IMPORTED_MODULE_1__["load"](modelParams)]);
-    model = lmodel;
-    console.log('model loaded');
-    this.runDetection();
-    this.setState({
-      message: 'READY',
-      inPlay: true
-    });
-    setInterval(_server_uckHunt__WEBPACK_IMPORTED_MODULE_2__["default"], this.state.gameSpeed); // defining "self" becuase cant access state inside setInterval
+      const [videoStatus, lmodel] = await Promise.all([this.startVideo(), handtrackjs__WEBPACK_IMPORTED_MODULE_1__["load"](modelParams)]);
+      model = lmodel;
+      console.log('model loaded');
+      this.runDetection();
+      this.setState({
+        message: 'READY',
+        inPlay: true
+      });
+      setInterval(_server_uckHunt__WEBPACK_IMPORTED_MODULE_2__["default"], this.state.gameSpeed); // defining "self" becuase cant access state inside setInterval
 
-    const self = this;
-    let nTargets = this.state.nTargets;
-    let createdTargets = 0;
-    const createTargets = setInterval(function () {
-      if (createdTargets < nTargets) {
-        self.addTarget();
-        createdTargets++;
-      }
-
-      if (self.checkGameEnd() && createdTargets === nTargets) {
-        if (self.state.score / self.state.nTargets >= .6) {
-          self.setState({
-            result: 'YOU WIN'
-          });
-        } else {
-          self.setState({
-            result: 'YOU LOSE'
-          });
+      const self = this;
+      let nTargets = this.state.nTargets;
+      let createdTargets = 0;
+      const createTargets = setInterval(function () {
+        if (createdTargets < nTargets) {
+          self.addTarget();
+          createdTargets++;
         }
 
-        self.setState({
-          inPlay: false,
-          selectedTarget: '',
-          message: 'PLAY AGAIN?'
-        });
-        clearInterval(createTargets);
-      }
-    }, 5000);
+        if (self.checkGameEnd() && createdTargets === nTargets) {
+          if (self.state.score / self.state.nTargets >= .6) {
+            self.setState({
+              result: 'YOU WIN'
+            });
+          } else {
+            self.setState({
+              result: 'YOU LOSE'
+            });
+          }
+
+          self.setState({
+            inPlay: false,
+            selectedTarget: '',
+            message: 'PLAY AGAIN?'
+          });
+          clearInterval(createTargets);
+        }
+      }, 5000);
+    }
   }
 
   checkGameEnd() {
@@ -339,8 +344,6 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       ref: this.screen,
       id: "screen"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "title"
-    }, "Duck Hunt!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "score"
     }, "Score: ", this.state.score, " / ", this.state.nTargets), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
       className: "fist",
@@ -359,19 +362,30 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     }, this.state.result), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       id: "setup",
       style: {
-        display: !this.state.inPlay ? 'inline' : 'none'
+        display: !this.state.inPlay ? 'flex' : 'none'
       }
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      id: "target-options"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
+      src: "/images/logo.png",
+      id: "logo"
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h2", null, "Welcome! Choose a *uck:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      id: "target-options"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "target-option-div"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", {
+      className: "target-name"
+    }, "TRUMP"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
       onClick: () => this.setSelectedTarget('trump'),
       className: this.state.selectedTarget === 'trump' ? 'target-option selected' : 'target-option',
       src: "/images/trumpface.png"
-    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
+    })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "target-option-div"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", {
+      className: "target-name"
+    }, "HITLER"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
       onClick: () => this.setSelectedTarget('hitler'),
       className: this.state.selectedTarget === 'hitler' ? 'target-option selected' : 'target-option',
       src: "/images/hitlerface.png"
-    })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       id: "play-buttons"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       id: "updatenote",
@@ -384,7 +398,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       id: "trackbutton",
       className: "bx--btn bx--btn--secondary",
       type: "button"
-    }, "Toggle Video"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_DogIntro__WEBPACK_IMPORTED_MODULE_3__["default"], null), this.state.result === 'YOU LOSE' ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_DogLaugh__WEBPACK_IMPORTED_MODULE_4__["default"], null) : null));
+    }, "Toggle Video"))), this.state.inPlay === true ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_DogIntro__WEBPACK_IMPORTED_MODULE_3__["default"], null) : null, this.state.result === 'YOU LOSE' ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_DogLaugh__WEBPACK_IMPORTED_MODULE_4__["default"], null) : null));
   }
 
 }

@@ -11,17 +11,19 @@ const modelParams = {
     scoreThreshold: 0.6,    // confidence threshold for predictions.
 }
 //awkward when bird is created (initial flight)
-// animation needs to be faster and smoother
-// bird explode
+// animation needs to be faster and smoother - game needs to be harder
+// bird explode. // sound bite of them going down
+// win dog
+// position of result message
+// also set inplay to false after a 5 sec timeout
 // set favicon
 // dictator heads - add more
-// logo
 //scoreboard
 // fix dog position
 // sound
 // levels: speed, fist size, frequency of new target created
 // 2 fists - xtra credit
-const nTargets = 3 // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
+const nTargets = 5 // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
 const gameSpeed = 500 // later refactor on child component Options state
 let model = null
 const video = document.getElementById("myvideo");
@@ -151,39 +153,42 @@ export default class App extends React.Component {
 		}
 	
 	async startGame(){
-		console.log('starting game')
-		this.setState({ message: 'PLEASE WAIT...', score: 0, result: '', })
-		// DO NOT DELETE BELOW if commented out!!!!!!!!!!
-		const [ videoStatus, lmodel ] = await Promise.all([
-			this.startVideo(),
-			handTrack.load(modelParams)
-		]);
-		model = lmodel
-		console.log('model loaded')
-		this.runDetection();
-
-		this.setState({ message: 'READY', inPlay: true })
-		setInterval(step, this.state.gameSpeed);
-		// defining "self" becuase cant access state inside setInterval
-		const self = this;
-		let nTargets = this.state.nTargets;
-		let createdTargets = 0;
-		const createTargets = setInterval(function(){
-			if(createdTargets < nTargets) {
-				self.addTarget();
-				createdTargets++	
-			}
-			if(self.checkGameEnd() && createdTargets === nTargets) {
-				if((self.state.score / self.state.nTargets) >= .6) {
-					self.setState({result: 'YOU WIN'})
+		if(!this.state.selectedTarget.length) this.setState({ message: "Please select a *uck"})
+		else {
+			console.log('starting game')
+			this.setState({ message: 'PLEASE WAIT...', score: 0, result: '', })
+			// DO NOT DELETE BELOW if commented out!!!!!!!!!!
+			const [ videoStatus, lmodel ] = await Promise.all([
+				this.startVideo(),
+				handTrack.load(modelParams)
+			]);
+			model = lmodel
+			console.log('model loaded')
+			this.runDetection();
+	
+			this.setState({ message: 'READY', inPlay: true })
+			setInterval(step, this.state.gameSpeed);
+			// defining "self" becuase cant access state inside setInterval
+			const self = this;
+			let nTargets = this.state.nTargets;
+			let createdTargets = 0;
+			const createTargets = setInterval(function(){
+				if(createdTargets < nTargets) {
+					self.addTarget();
+					createdTargets++	
 				}
-				else {
-					self.setState({result: 'YOU LOSE'})
+				if(self.checkGameEnd() && createdTargets === nTargets) {
+					if((self.state.score / self.state.nTargets) >= .6) {
+						self.setState({result: 'YOU WIN'})
+					}
+					else {
+						self.setState({result: 'YOU LOSE'})
+					}
+					self.setState({ inPlay: false, selectedTarget: '', message: 'PLAY AGAIN?' })
+					clearInterval(createTargets)	
 				}
-				self.setState({ inPlay: false, selectedTarget: '', message: 'PLAY AGAIN?' })
-				clearInterval(createTargets)	
-			}
-		}, 5000)
+			}, 5000)
+		}
 	}
 	
 	checkGameEnd(){
@@ -201,7 +206,6 @@ export default class App extends React.Component {
 		return(
 			<>
 			<div ref={this.screen} id='screen'>
-				<div className="title">Duck Hunt!</div>
 				<div className="score">Score: {this.state.score} / {this.state.nTargets}</div>
 				<img 
 					className="fist" src='/images/fist.png' 
@@ -210,14 +214,22 @@ export default class App extends React.Component {
 				</img>
 				<div id='targets' ref={this.targets}></div>
 				<h1 className='result'>{this.state.result}</h1>
-				<div id='setup' style={{display: !this.state.inPlay ? 'inline' : 'none' }}>
+				<div id='setup' style={{display: !this.state.inPlay ? 'flex' : 'none' }}>
+					<img src='/images/logo.png' id='logo'></img>
+					<h2>Welcome! Choose a *uck:</h2>
 					<div id='target-options'>
-						<img onClick={() => this.setSelectedTarget('trump')} 
-							className={this.state.selectedTarget === 'trump' ? 'target-option selected' : 'target-option'} 
-							src='/images/trumpface.png'></img>
-						<img onClick={() => this.setSelectedTarget('hitler')} 
+						<div className='target-option-div'>
+							<h3 className='target-name'>TRUMP</h3>
+							<img onClick={() => this.setSelectedTarget('trump')} 
+								className={this.state.selectedTarget === 'trump' ? 'target-option selected' : 'target-option'} 
+								src='/images/trumpface.png'></img>
+						</div>
+						<div className='target-option-div'>
+							<h3 className='target-name'>HITLER</h3>
+							<img onClick={() => this.setSelectedTarget('hitler')} 
 							className={this.state.selectedTarget === 'hitler' ? 'target-option selected' : 'target-option'} 
 							src='/images/hitlerface.png'></img>
+						</div>
 					</div>
 					<div id='play-buttons'>
 						<div id="updatenote" className="updatenote mt10">{this.state.message}</div>
@@ -225,7 +237,7 @@ export default class App extends React.Component {
 						<button onClick={this.toggleVideo} id="trackbutton" className="bx--btn bx--btn--secondary" type="button">Toggle Video</button>
 					</div>
 				</div>
-				<DogIntro></DogIntro>
+				{ this.state.inPlay === true ? <DogIntro></DogIntro> : null }
 				{ this.state.result === 'YOU LOSE' ? <DogLaugh></DogLaugh> : null}
 			</div>
 		  </>
