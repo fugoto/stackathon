@@ -8,17 +8,19 @@ const modelParams = {
     iouThreshold: 0.5,      // ioU threshold for non-max suppression
     scoreThreshold: 0.6,    // confidence threshold for predictions.
 }
-// fist should not appear in beginning
 //awkward when bird is created (initial flight)
+// animation needs to be faster and smoother
 // bird explode
-// do dog and grass
+// do dog
 // set favicon
-// dictator heads
+// dictator heads - add more
 // logo
+//scoreboard
+// sound
 // levels: speed, fist size, frequency of new target created
 // 2 fists - xtra credit
 const nTargets = 3 // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
-const gameSpeed = 500 // later refactor on child component Options state
+const gameSpeed = 400 // later refactor on child component Options state
 let model = null
 const video = document.getElementById("myvideo");
 const canvas = document.getElementById("canvas");
@@ -35,7 +37,7 @@ export default class App extends React.Component {
 		super(props)
 		this.state = {
 			isVideo: false,
-			message: "loading model...",
+			message: "",
 			coordinates: [],
 			errorMargin: 100,
 			nTargets: nTargets,
@@ -45,11 +47,13 @@ export default class App extends React.Component {
 			inPlay: false,
 			targets: [],
 			fistWidth: '150px',
-			fistHeight: '116px'
+			fistHeight: '116px',
+			selectedTarget: ''
 		}
 		this.targets = React.createRef();
 		this.screen = React.createRef();
 		this.fist = React.createRef();
+		this.setSelectedTarget = this.setSelectedTarget.bind(this)
 		this.startVideo = this.startVideo.bind(this)
 		this.toggleVideo = this.toggleVideo.bind(this)
 		this.runDetection = this.runDetection.bind(this)
@@ -58,6 +62,11 @@ export default class App extends React.Component {
 		this.addTarget = this.addTarget.bind(this)
 		this.determineHit = this.determineHit.bind(this)
 	}
+	setSelectedTarget(selectedTarget){
+		console.log(selectedTarget)
+		this.setState({ selectedTarget })
+	}
+
 	async startVideo() {
 		const status = await handTrack.startVideo(video)
 		if (status) {
@@ -135,11 +144,13 @@ export default class App extends React.Component {
 		const directions = ['left', 'right']
 		const targetDirection = directions[Math.floor(Math.random() * directions.length)]
 		const initialPos = Math.floor(this.screen.current.clientWidth * Math.random())
-		$('#targets').append(`<div class="target ${targetDirection}" style="${targetDirection}: ${initialPos}px"></div>`)
+		console.log(targetDirection, initialPos)
+		$('#targets').append(`<div class="target ${targetDirection}" style="${targetDirection}: ${initialPos}px; bottom: ${this.screen.current.clientHeight * .2}px; background-image: url('/images/${this.state.selectedTarget}.png')"></div>`)
 		}
-
+	
 	async startGame(){
 		console.log('starting game')
+		this.setState({ message: 'PLEASE WAIT...' })
 		// DO NOT DELETE BELOW if commented out!!!!!!!!!!
 		const [ videoStatus, lmodel ] = await Promise.all([
 			this.startVideo(),
@@ -148,9 +159,9 @@ export default class App extends React.Component {
 		model = lmodel
 		console.log('model loaded')
 		this.runDetection();
-		this.setState({ message: 'model loaded', inPlay: true })
-		setInterval(step, this.state.gameSpeed);
 
+		this.setState({ message: 'READY', inPlay: true })
+		setInterval(step, this.state.gameSpeed);
 		// defining "self" becuase cant access state inside setInterval
 		const self = this;
 		let nTargets = this.state.nTargets;
@@ -167,20 +178,12 @@ export default class App extends React.Component {
 				else {
 					self.setState({result: 'YOU LOSE'})
 				}
-				self.setState({ inPlay: false })
+				self.setState({ inPlay: false, selectedTarget: '', message: 'PLAY AGAIN?' })
 				clearInterval(createTargets)	
 			}
 		}, 5000)
 	}
 	
-	// result() {
-	// 	if((self.state.score / self.state.nTargets) >= .6) {
-	// 		self.setState({result: 'YOU WIN'})
-	// 	}
-	// 	else {
-	// 		self.setState({result: 'YOU LOSE'})
-	// 	}
-	// }
 	checkGameEnd(){
 		let targets = document.querySelectorAll(".target");
 			if(!targets.length) return false
@@ -196,25 +199,31 @@ export default class App extends React.Component {
 		return(
 			<>
 			<div ref={this.screen} id='screen'>
-			<div className="title">Duck Hunt!</div>
+				<div className="title">Duck Hunt!</div>
 				<div className="score">Score: {this.state.score} / {this.state.nTargets}</div>
-				{/* <div className="fist" ref={this.fist} style={{width: this.state.fistWidth}}>
-					<img className='fistImage' src='/images/fist.png'></img>
-				</div> */}
 				<img 
 					className="fist" src='/images/fist.png' 
-					ref={this.fist}  
+					ref={this.fist}
 					style={{width: this.state.fistWidth, height: this.state.fistHeight, display: !this.state.inPlay ? 'none': 'inline'}}>
 				</img>
-				{/* style={{width: this.state.fistWidth, height: this.state.fistHeight}} */}
 				<div id='targets' ref={this.targets}></div>
 				<h1 className='result'>{this.state.result}</h1>
-				<button onClick={this.toggleVideo} id="trackbutton" className="bx--btn bx--btn--secondary" type="button">
-      			Toggle Video
-   		 		</button>
-				<button id='start-game' onClick={this.startGame}>Start Game</button>
-				{/* <button onClick={this.getCoordinates}>test</button> */}
-				<div id="updatenote" className="updatenote mt10">{this.state.message}</div>
+				<div id='setup' style={{display: !this.state.inPlay ? 'inline' : 'none' }}>
+					<div id='target-options'>
+						<img onClick={() => this.setSelectedTarget('trump')} 
+							className={this.state.selectedTarget === 'trump' ? 'target-option selected' : 'target-option'} 
+							src='/images/trumpface.png'></img>
+						<img onClick={() => this.setSelectedTarget('hitler')} 
+							className={this.state.selectedTarget === 'hitler' ? 'target-option selected' : 'target-option'} 
+							src='/images/hitlerface.png'></img>
+					</div>
+					<div id='play-buttons'>
+						<div id="updatenote" className="updatenote mt10">{this.state.message}</div>
+						<button id='start-game' onClick={this.startGame}>PLAY</button>
+						<button onClick={this.toggleVideo} id="trackbutton" className="bx--btn bx--btn--secondary" type="button">Toggle Video</button>
+					</div>
+
+				</div>
 			</div>
 		  </>
 		)

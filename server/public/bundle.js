@@ -112,19 +112,21 @@ const modelParams = {
   // ioU threshold for non-max suppression
   scoreThreshold: 0.6 // confidence threshold for predictions.
 
-}; // fist should not appear in beginning
-//awkward when bird is created (initial flight)
+}; //awkward when bird is created (initial flight)
+// animation needs to be faster and smoother
 // bird explode
-// do dog and grass
+// do dog
 // set favicon
-// dictator heads
+// dictator heads - add more
 // logo
+//scoreboard
+// sound
 // levels: speed, fist size, frequency of new target created
 // 2 fists - xtra credit
 
 const nTargets = 3; // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
 
-const gameSpeed = 500; // later refactor on child component Options state
+const gameSpeed = 400; // later refactor on child component Options state
 
 let model = null;
 const video = document.getElementById("myvideo");
@@ -139,7 +141,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     super(props);
     this.state = {
       isVideo: false,
-      message: "loading model...",
+      message: "",
       coordinates: [],
       errorMargin: 100,
       nTargets: nTargets,
@@ -149,11 +151,13 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       inPlay: false,
       targets: [],
       fistWidth: '150px',
-      fistHeight: '116px'
+      fistHeight: '116px',
+      selectedTarget: ''
     };
     this.targets = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
     this.screen = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
     this.fist = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
+    this.setSelectedTarget = this.setSelectedTarget.bind(this);
     this.startVideo = this.startVideo.bind(this);
     this.toggleVideo = this.toggleVideo.bind(this);
     this.runDetection = this.runDetection.bind(this);
@@ -161,6 +165,13 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     this.startGame = this.startGame.bind(this);
     this.addTarget = this.addTarget.bind(this);
     this.determineHit = this.determineHit.bind(this);
+  }
+
+  setSelectedTarget(selectedTarget) {
+    console.log(selectedTarget);
+    this.setState({
+      selectedTarget
+    });
   }
 
   async startVideo() {
@@ -254,18 +265,22 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     const directions = ['left', 'right'];
     const targetDirection = directions[Math.floor(Math.random() * directions.length)];
     const initialPos = Math.floor(this.screen.current.clientWidth * Math.random());
-    $('#targets').append(`<div class="target ${targetDirection}" style="${targetDirection}: ${initialPos}px"></div>`);
+    console.log(targetDirection, initialPos);
+    $('#targets').append(`<div class="target ${targetDirection}" style="${targetDirection}: ${initialPos}px; bottom: ${this.screen.current.clientHeight * .2}px; background-image: url('/images/${this.state.selectedTarget}.png')"></div>`);
   }
 
   async startGame() {
-    console.log('starting game'); // DO NOT DELETE BELOW if commented out!!!!!!!!!!
+    console.log('starting game');
+    this.setState({
+      message: 'PLEASE WAIT...'
+    }); // DO NOT DELETE BELOW if commented out!!!!!!!!!!
 
     const [videoStatus, lmodel] = await Promise.all([this.startVideo(), handtrackjs__WEBPACK_IMPORTED_MODULE_1__["load"](modelParams)]);
     model = lmodel;
     console.log('model loaded');
     this.runDetection();
     this.setState({
-      message: 'model loaded',
+      message: 'READY',
       inPlay: true
     });
     setInterval(_server_uckHunt__WEBPACK_IMPORTED_MODULE_2__["default"], this.state.gameSpeed); // defining "self" becuase cant access state inside setInterval
@@ -291,20 +306,14 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
         }
 
         self.setState({
-          inPlay: false
+          inPlay: false,
+          selectedTarget: '',
+          message: 'PLAY AGAIN?'
         });
         clearInterval(createTargets);
       }
     }, 5000);
-  } // result() {
-  // 	if((self.state.score / self.state.nTargets) >= .6) {
-  // 		self.setState({result: 'YOU WIN'})
-  // 	}
-  // 	else {
-  // 		self.setState({result: 'YOU LOSE'})
-  // 	}
-  // }
-
+  }
 
   checkGameEnd() {
     let targets = document.querySelectorAll(".target");
@@ -341,18 +350,35 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       ref: this.targets
     }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", {
       className: "result"
-    }, this.state.result), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    }, this.state.result), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      id: "setup",
+      style: {
+        display: !this.state.inPlay ? 'inline' : 'none'
+      }
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      id: "target-options"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
+      onClick: () => this.setSelectedTarget('trump'),
+      className: this.state.selectedTarget === 'trump' ? 'target-option selected' : 'target-option',
+      src: "/images/trumpface.png"
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
+      onClick: () => this.setSelectedTarget('hitler'),
+      className: this.state.selectedTarget === 'hitler' ? 'target-option selected' : 'target-option',
+      src: "/images/hitlerface.png"
+    })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      id: "play-buttons"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      id: "updatenote",
+      className: "updatenote mt10"
+    }, this.state.message), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+      id: "start-game",
+      onClick: this.startGame
+    }, "PLAY"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
       onClick: this.toggleVideo,
       id: "trackbutton",
       className: "bx--btn bx--btn--secondary",
       type: "button"
-    }, "Toggle Video"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
-      id: "start-game",
-      onClick: this.startGame
-    }, "Start Game"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      id: "updatenote",
-      className: "updatenote mt10"
-    }, this.state.message)));
+    }, "Toggle Video")))));
   }
 
 }
@@ -89144,9 +89170,9 @@ function step() {
   $('.target.left').each(function (i, target) {
     target = $(target);
     target.animate({
-      left: '-=100',
-      top: '-=50'
-    }, 1); //   target.css({
+      left: '-=200',
+      top: '-=70'
+    }, 100); //   target.css({
     //     'left': target.offset().left - 50,
     //     'top': target.offset().top - 10,
     // });
@@ -89155,9 +89181,9 @@ function step() {
   $('.target.right').each(function (i, target) {
     target = $(target);
     target.animate({
-      left: '+=100',
-      top: '-=50'
-    }, 1); // target.css({
+      left: '+=200',
+      top: '-=70'
+    }, 100); // target.css({
     //   'left': target.offset().left + 50,
     //   'top': target.offset().top -10,
     // });

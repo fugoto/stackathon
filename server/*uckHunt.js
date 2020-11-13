@@ -57,9 +57,9 @@ export default function step() {
   $('.target.left').each(function (i, target) {
     target = $(target);
     target.animate({
-      left: '-=100',
-      top: '-=50'
-    }, 1)
+      left: '-=200',
+      top: '-=70'
+    }, 100)
   //   target.css({
   //     'left': target.offset().left - 50,
   //     'top': target.offset().top - 10,
@@ -70,9 +70,9 @@ export default function step() {
   $('.target.right').each(function (i, target) {
     target = $(target);
     target.animate({
-      left: '+=100',
-      top: '-=50'
-    }, 1)
+      left: '+=200',
+      top: '-=70'
+    }, 100)
     // target.css({
     //   'left': target.offset().left + 50,
     //   'top': target.offset().top -10,
