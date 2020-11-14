@@ -157,7 +157,7 @@ body {
   
     // replace the duck with a 'splat' image
     &.shot {
-      z-index: -1;
+      z-index: 5;
       background-image: url('/images/shot.png');
     }
   }

@@ -119,13 +119,9 @@ const modelParams = {
   scoreThreshold: 0.6 // confidence threshold for predictions.
 
 }; // animation needs to be faster and smoother - game needs to be harder. make fist width smaller?
-// bird explode. // sound bite of them going down
+// bird explode. 
 // levels: speed, fist size, frequency of new target created
-// win dog
-// set favicon
 //scoreboard
-// fix dog position
-// sound
 
 const nTargets = 3; // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
 
@@ -134,7 +130,8 @@ const gameSpeed = 500; // later refactor on child component Options state
 let model = null;
 const video = document.getElementById("myvideo");
 const canvas = document.getElementById("canvas");
-const context = canvas.getContext("2d"); // let targets = document.querySelectorAll(".target");
+const context = canvas.getContext("2d");
+const ouch = new Audio('/Ouch.m4a'); // let targets = document.querySelectorAll(".target");
 // let trackButton = document.getElementById("trackbutton");
 // let updateNote = document.getElementById("updatenote");
 
@@ -145,7 +142,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       isVideo: false,
       message: "",
       coordinates: [],
-      errorMargin: 100,
+      errorMargin: 20,
       nTargets: nTargets,
       gameSpeed: gameSpeed,
       score: 0,
@@ -253,7 +250,15 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       const targetPos = target.getBoundingClientRect();
 
       if (xAdj - errorMargin <= targetPos.x && xAdj + widthAdj + errorMargin >= targetPos.x + targetPos.width && yAdj - errorMargin <= targetPos.y && yAdj + heightAdj + errorMargin >= targetPos.y + targetPos.height) {
-        console.log('HIT');
+        console.log('HIT'); // target.src = '/images/shot.png'
+        // target.style.backgroundImage = "url('/images/shot.png')";
+        // target.addClass('shot')
+        // target.style.backgroundSize = 'cover'
+        // setTimeout (() => {
+        // 	target.style.display="none"}, 1000 
+        // )
+
+        ouch.play();
         target.style.display = "none";
         this.setState({
           score: this.state.score + 1
@@ -276,7 +281,8 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     });else {
       console.log('starting game');
       this.setState({
-        message: 'PLEASE WAIT...'
+        message: 'PLEASE WAIT...',
+        score: 0
       }); // DO NOT DELETE BELOW if commented out!!!!!!!!!!
 
       const [videoStatus, lmodel] = await Promise.all([this.startVideo(), handtrackjs__WEBPACK_IMPORTED_MODULE_1__["load"](modelParams)]);
@@ -343,7 +349,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       id: "screen"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "score"
-    }, "Score: ", this.state.score, " / ", this.state.nTargets), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
+    }, this.state.inPlay ? `Score: ${this.state.score} / ${this.state.nTargets}` : null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
       className: "fist",
       src: "/images/fist.png",
       ref: this.fist,
