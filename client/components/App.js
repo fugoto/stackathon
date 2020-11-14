@@ -10,20 +10,22 @@ const modelParams = {
     iouThreshold: 0.5,      // ioU threshold for non-max suppression
     scoreThreshold: 0.6,    // confidence threshold for predictions.
 }
-// DEPLOY...
 // position of result message
+// center update msg
+// toggle video button
 // animation needs to be faster and smoother - game needs to be harder. make fist width smaller?
+
 // bird explode. // sound bite of them going down
+// dictator heads - add more
+// levels: speed, fist size, frequency of new target created
+
 // win dog
 // also set inplay to false after a 5 sec timeout
 // set favicon
-// dictator heads - add more
 //scoreboard
 // fix dog position
 // sound
-// levels: speed, fist size, frequency of new target created
-// 2 fists - xtra credit
-const nTargets = 5 // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
+const nTargets = 3 // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
 const gameSpeed = 500 // later refactor on child component Options state
 let model = null
 const video = document.getElementById("myvideo");
@@ -67,7 +69,7 @@ export default class App extends React.Component {
 		this.determineHit = this.determineHit.bind(this)
 	}
 	setSelectedTarget(selectedTarget){
-		console.log(selectedTarget)
+		// console.log(selectedTarget)
 		this.setState({ selectedTarget })
 	}
 
@@ -113,7 +115,7 @@ export default class App extends React.Component {
 
 	getCoordinates() {
 		const target = this.targets.current.getBoundingClientRect();
-		console.log(target.x, target.y, target.width, target.height);
+		// console.log(target.x, target.y, target.width, target.height);
 	}
 	//1160 490
 	// 640 480
@@ -156,7 +158,7 @@ export default class App extends React.Component {
 		if(!this.state.selectedTarget.length) this.setState({ message: "Please select a *uck"})
 		else {
 			console.log('starting game')
-			this.setState({ message: 'PLEASE WAIT...', score: 0, result: '', })
+			this.setState({ message: 'PLEASE WAIT...' })
 			// DO NOT DELETE BELOW if commented out!!!!!!!!!!
 			const [ videoStatus, lmodel ] = await Promise.all([
 				this.startVideo(),
@@ -184,19 +186,26 @@ export default class App extends React.Component {
 					else {
 						self.setState({result: 'YOU LOSE'})
 					}
-					self.setState({ inPlay: false, selectedTarget: '', message: 'PLAY AGAIN?' })
+					setTimeout (() => {
+						self.setState({ inPlay: false, selectedTarget: '', message: 'PLAY AGAIN?', result: '', score: 0 })}, 5000 
+					)
 					clearInterval(createTargets)	
 				}
-			}, 5000)
+			}, 3000)
 		}
 	}
-	
+	// resetGame(){
+	// 	setTimeout (() => {
+	// 		this.setState({ inPlay: false, selectedTarget: '', message: 'PLAY AGAIN?' }), 5000 }
+	// 	)
+	// }
+
 	checkGameEnd(){
 		let targets = document.querySelectorAll(".target");
 			if(!targets.length) return false
 			for(let i = 0; i < targets.length; i++) {
 				let target = targets[i]
-				console.log('target',target)
+				// console.log('target',target)
 				if(target.style.display !== 'none') return false
 			}
 			return true
@@ -219,10 +228,22 @@ export default class App extends React.Component {
 					<h2>Welcome! Choose a *uck:</h2>
 					<div id='target-options'>
 						<div className='target-option-div'>
-							<h3 className='target-name'>TRUMP</h3>
+							<h3 className='target-name'>TR*MP</h3>
 							<img onClick={() => this.setSelectedTarget('trump')} 
 								className={this.state.selectedTarget === 'trump' ? 'target-option selected' : 'target-option'} 
 								src='/images/trumpface.png'></img>
+						</div>
+						<div className='target-option-div'>
+							<h3 className='target-name'>P*TIN</h3>
+							<img onClick={() => this.setSelectedTarget('putin')} 
+								className={this.state.selectedTarget === 'putin' ? 'target-option selected' : 'target-option'} 
+								src='/images/putinface.png'></img>
+						</div>
+						<div className='target-option-div'>
+							<h3 className='target-name'>KIM</h3>
+							<img onClick={() => this.setSelectedTarget('kim')} 
+							className={this.state.selectedTarget === 'kim' ? 'target-option selected' : 'target-option'} 
+							src='/images/kimface.png'></img>
 						</div>
 						<div className='target-option-div'>
 							<h3 className='target-name'>HITLER</h3>

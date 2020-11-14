@@ -116,21 +116,21 @@ const modelParams = {
   // ioU threshold for non-max suppression
   scoreThreshold: 0.6 // confidence threshold for predictions.
 
-}; // DEPLOY...
-// position of result message
+}; // position of result message
+// center update msg
+// toggle video button
 // animation needs to be faster and smoother - game needs to be harder. make fist width smaller?
 // bird explode. // sound bite of them going down
+// dictator heads - add more
+// levels: speed, fist size, frequency of new target created
 // win dog
 // also set inplay to false after a 5 sec timeout
 // set favicon
-// dictator heads - add more
 //scoreboard
 // fix dog position
 // sound
-// levels: speed, fist size, frequency of new target created
-// 2 fists - xtra credit
 
-const nTargets = 5; // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
+const nTargets = 3; // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
 
 const gameSpeed = 500; // later refactor on child component Options state
 
@@ -174,7 +174,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
   }
 
   setSelectedTarget(selectedTarget) {
-    console.log(selectedTarget);
+    // console.log(selectedTarget)
     this.setState({
       selectedTarget
     });
@@ -234,8 +234,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
   }
 
   getCoordinates() {
-    const target = this.targets.current.getBoundingClientRect();
-    console.log(target.x, target.y, target.width, target.height);
+    const target = this.targets.current.getBoundingClientRect(); // console.log(target.x, target.y, target.width, target.height);
   } //1160 490
   // 640 480
 
@@ -281,9 +280,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     });else {
       console.log('starting game');
       this.setState({
-        message: 'PLEASE WAIT...',
-        score: 0,
-        result: ''
+        message: 'PLEASE WAIT...'
       }); // DO NOT DELETE BELOW if commented out!!!!!!!!!!
 
       const [videoStatus, lmodel] = await Promise.all([this.startVideo(), handtrackjs__WEBPACK_IMPORTED_MODULE_1__["load"](modelParams)]);
@@ -316,24 +313,33 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
             });
           }
 
-          self.setState({
-            inPlay: false,
-            selectedTarget: '',
-            message: 'PLAY AGAIN?'
-          });
+          setTimeout(() => {
+            self.setState({
+              inPlay: false,
+              selectedTarget: '',
+              message: 'PLAY AGAIN?',
+              result: '',
+              score: 0
+            });
+          }, 5000);
           clearInterval(createTargets);
         }
-      }, 5000);
+      }, 3000);
     }
-  }
+  } // resetGame(){
+  // 	setTimeout (() => {
+  // 		this.setState({ inPlay: false, selectedTarget: '', message: 'PLAY AGAIN?' }), 5000 }
+  // 	)
+  // }
+
 
   checkGameEnd() {
     let targets = document.querySelectorAll(".target");
     if (!targets.length) return false;
 
     for (let i = 0; i < targets.length; i++) {
-      let target = targets[i];
-      console.log('target', target);
+      let target = targets[i]; // console.log('target',target)
+
       if (target.style.display !== 'none') return false;
     }
 
@@ -374,10 +380,26 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       className: "target-option-div"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", {
       className: "target-name"
-    }, "TRUMP"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
+    }, "TR*MP"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
       onClick: () => this.setSelectedTarget('trump'),
       className: this.state.selectedTarget === 'trump' ? 'target-option selected' : 'target-option',
       src: "/images/trumpface.png"
+    })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "target-option-div"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", {
+      className: "target-name"
+    }, "P*TIN"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
+      onClick: () => this.setSelectedTarget('putin'),
+      className: this.state.selectedTarget === 'putin' ? 'target-option selected' : 'target-option',
+      src: "/images/putinface.png"
+    })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "target-option-div"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", {
+      className: "target-name"
+    }, "KIM"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
+      onClick: () => this.setSelectedTarget('kim'),
+      className: this.state.selectedTarget === 'kim' ? 'target-option selected' : 'target-option',
+      src: "/images/kimface.png"
     })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "target-option-div"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", {
