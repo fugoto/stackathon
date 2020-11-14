@@ -10,11 +10,11 @@ const modelParams = {
     iouThreshold: 0.5,      // ioU threshold for non-max suppression
     scoreThreshold: 0.6,    // confidence threshold for predictions.
 }
-//awkward when bird is created (initial flight)
-// animation needs to be faster and smoother - game needs to be harder
+// DEPLOY...
+// position of result message
+// animation needs to be faster and smoother - game needs to be harder. make fist width smaller?
 // bird explode. // sound bite of them going down
 // win dog
-// position of result message
 // also set inplay to false after a 5 sec timeout
 // set favicon
 // dictator heads - add more
