@@ -1,3 +1,8 @@
+* {
+  font-family: "Press Start 2P", cursive;
+  color: white;
+}
+
 h1 {
   color: limegreen;
 }
@@ -37,9 +42,9 @@ body {
 
 .updatenote {
   padding: 10px;
-  background: #f59314;
   color: white;
-  display: inline;
+  display: block;
+  width: 100%;
 }
 
 #app {
@@ -79,6 +84,7 @@ img {
 
 #screen {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100vw;
@@ -92,28 +98,26 @@ img {
   background-image: url("/images/stage.png");
 }
 
+#grass {
+  z-index: 100;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: auto;
+}
+
 .score {
   position: absolute;
   top: 10px;
   right: 30px;
   font-size: 2em;
-  font-family: Tahoma, Geneva, sans-serif;
-  color: red;
-}
-
-.title {
-  position: absolute;
-  top: 10px;
-  left: 30px;
-  font-size: 2em;
-  font-family: Tahoma, Geneva, sans-serif;
+  color: white;
 }
 
 .target {
   position: absolute;
   width: 110px;
   height: 115px;
-  background-image: url("/images/duckhunt.png");
   background-repeat: no-repeat;
   bottom: 0;
   transition: left 1s, top 1s, right 1s, bottom 1s;
@@ -138,19 +142,949 @@ img {
 
 .fist {
   position: absolute;
-}
-
-.fistImage {
-  width: 100%;
-  height: auto;
-  z-index: -1;
   opacity: 0.6;
 }
 
 .result {
   color: white;
+  display: block;
+  width: 100%;
 }
 
 #start-game {
   z-index: 50;
+  display: block;
+  width: 100%;
+  font-family: "Press Start 2P", cursive;
+  padding: 10px;
+  font-size: 30px;
+  margin: 10px;
+  background-color: #42f5e6;
+  border: 5px orange solid;
+}
+
+#target-options {
+  display: flex;
+}
+
+.target-name {
+  text-align: center;
+  margin-bottom: 0;
+  color: white;
+}
+
+.target-option {
+  border-radius: 50%;
+  border: solid 5px white;
+  padding: 10px;
+  margin: 20px;
+  background: #42f5e6;
+}
+
+.selected {
+  border: solid 5px orange;
+}
+
+#setup {
+  flex-direction: column;
+  align-items: center;
+}
+
+#logo {
+  width: 70%;
+  height: auto;
+}
+
+#play-buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+
+@keyframes dogMove {
+  from {
+    left: 0px;
+  }
+  to {
+    left: 450px;
+  }
+}
+@keyframes dogWalk {
+  0% {
+    background-position: 0px 0px;
+  }
+  3% {
+    background-position: -120px 0px;
+  }
+  6% {
+    background-position: -240px 0px;
+  }
+  9% {
+    background-position: -360px 0px;
+  }
+  12% {
+    background-position: 0px 0px;
+  }
+  15% {
+    background-position: -120px 0px;
+  }
+  18% {
+    background-position: -240px 0px;
+  }
+  21% {
+    background-position: -360px 0px;
+  }
+  24% {
+    background-position: 0px 0px;
+  }
+  27% {
+    background-position: -120px 0px;
+  }
+  30% {
+    background-position: -240px 0px;
+  }
+  33% {
+    background-position: -360px 0px;
+  }
+  36% {
+    background-position: 0px 0px;
+  }
+  39% {
+    background-position: -120px 0px;
+  }
+  42% {
+    background-position: -240px 0px;
+  }
+  45% {
+    background-position: -360px 0px;
+  }
+  48% {
+    background-position: 0px 0px;
+  }
+  51% {
+    background-position: -120px 0px;
+  }
+  54% {
+    background-position: -240px 0px;
+  }
+  57% {
+    background-position: -360px 0px;
+  }
+  60% {
+    background-position: 0px 0px;
+  }
+  63% {
+    background-position: -120px 0px;
+  }
+  66% {
+    background-position: -240px 0px;
+  }
+  69% {
+    background-position: -360px 0px;
+  }
+  /* Walk */
+  72% {
+    background-position: -480px 0px;
+  }
+  /* Snif  */
+  75% {
+    background-position: -360px 0px;
+  }
+  78% {
+    background-position: -480px 0px;
+  }
+  81% {
+    background-position: -360px 0px;
+  }
+  90% {
+    background-position: 0px -110px;
+  }
+  /* Find */
+  93% {
+    background-position: -120px -110px;
+  }
+  /* Jump */
+  96% {
+    background-position: -240px -110px;
+  }
+  100% {
+    background-position: 1000px 1000px;
+  }
+  /*Hide*/
+}
+@keyframes dogLaugh {
+  0% {
+    background-position: -360px -110px;
+  }
+  50% {
+    background-position: -480px -110px;
+  }
+  100% {
+    background-position: -360px -110px;
+  }
+}
+@keyframes dogShow {
+  0% {
+    top: 560px;
+  }
+  25% {
+    top: 480px;
+  }
+  75% {
+    top: 480px;
+  }
+  100% {
+    top: 560px;
+  }
+}
+#dogIntro {
+  position: fixed;
+  bottom: 50px;
+  z-index: 1;
+  background: url("/images/dogonly.png") no-repeat;
+  width: 120px;
+  height: 100px;
+}
+
+#dogLaugh {
+  width: 1280px;
+  height: 570px;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+#dogLaugh > div {
+  position: absolute;
+  top: 560px;
+  left: 560px;
+}
+#dogLaugh > div > span {
+  width: 150px;
+  height: 100px;
+}
+#dogLaugh > div > span:nth-child(1) {
+  display: block;
+  background: url("/images/dogonly.png") no-repeat;
+  animation: dogLaugh 200ms infinite steps(1) alternate;
+}
+#dogLaugh > div > span:nth-child(2) {
+  display: none;
+  background: url("/images/dogonly.png") no-repeat;
+  background-position: -600px 0px;
+}
+
+#bc1-1:checked ~ #shootingArea > div:nth-child(1) > div > label:nth-child(1),
+#bc1-1:checked ~ #shootingArea > div:nth-child(1) > div > div > label,
+#bc1-1:checked ~ #bullets div > div:nth-child(1) > span:nth-child(3) {
+  display: none;
+}
+
+#bc1-1:checked ~ #shootingArea > div:nth-child(1) > div > div > span {
+  display: block;
+}
+
+#bc1-2:checked ~ #shootingArea > div:nth-child(1) > div > label:nth-child(2),
+#bc1-2:checked ~ #bullets div > div:nth-child(1) > span:nth-child(2) {
+  display: none;
+}
+
+#bc1-3:checked ~ #shootingArea > div:nth-child(1) > div > label:nth-child(3),
+#bc1-3:checked ~ #bullets div > div:nth-child(1) > span:nth-child(1) {
+  display: none;
+}
+
+#shootingArea > div:nth-child(1) > div > div {
+  position: absolute;
+  left: -100px;
+  top: 0;
+  width: 70px;
+  height: 76px;
+}
+
+#d1:checked ~ #points .pts1 {
+  left: -142px;
+}
+
+#d1:checked ~ #shootingArea > div:nth-child(1) label {
+  display: none;
+}
+
+#d1:checked ~ #shootingArea > div:nth-child(1) > div > div > span {
+  animation: duckFall 500ms linear forwards;
+  background-position: -65px -460px;
+  display: block;
+}
+
+#d1:checked ~ #shootingArea > div:nth-child(1) > div > div {
+  animation-play-state: paused;
+}
+
+#d1:checked ~ #dogLaugh > div:nth-child(1) > span:nth-child(1) {
+  display: none;
+}
+
+#d1:checked ~ #dogLaugh > div:nth-child(1) > span:nth-child(2) {
+  display: block;
+}
+
+#d1:checked ~ #hits > div > span:nth-child(1) {
+  background-position: -25px -557px;
+}
+
+#bc2-1:checked ~ #shootingArea > div:nth-child(2) > div > label:nth-child(1),
+#bc2-1:checked ~ #shootingArea > div:nth-child(2) > div > div > label,
+#bc2-1:checked ~ #bullets div > div:nth-child(2) > span:nth-child(3) {
+  display: none;
+}
+
+#bc2-1:checked ~ #shootingArea > div:nth-child(2) > div > div > span {
+  display: block;
+}
+
+#bc2-2:checked ~ #shootingArea > div:nth-child(2) > div > label:nth-child(2),
+#bc2-2:checked ~ #bullets div > div:nth-child(2) > span:nth-child(2) {
+  display: none;
+}
+
+#bc2-3:checked ~ #shootingArea > div:nth-child(2) > div > label:nth-child(3),
+#bc2-3:checked ~ #bullets div > div:nth-child(2) > span:nth-child(1) {
+  display: none;
+}
+
+#shootingArea > div:nth-child(2) > div > div {
+  position: absolute;
+  left: -100px;
+  top: 0;
+  width: 70px;
+  height: 76px;
+}
+
+#d2:checked ~ #points .pts2 {
+  left: -142px;
+}
+
+#d2:checked ~ #shootingArea > div:nth-child(2) label {
+  display: none;
+}
+
+#d2:checked ~ #shootingArea > div:nth-child(2) > div > div > span {
+  animation: duckFall 500ms linear forwards;
+  background-position: -65px -460px;
+  display: block;
+}
+
+#d2:checked ~ #shootingArea > div:nth-child(2) > div > div {
+  animation-play-state: paused;
+}
+
+#d2:checked ~ #dogLaugh > div:nth-child(2) > span:nth-child(1) {
+  display: none;
+}
+
+#d2:checked ~ #dogLaugh > div:nth-child(2) > span:nth-child(2) {
+  display: block;
+}
+
+#d2:checked ~ #hits > div > span:nth-child(2) {
+  background-position: -25px -557px;
+}
+
+#bc3-1:checked ~ #shootingArea > div:nth-child(3) > div > label:nth-child(1),
+#bc3-1:checked ~ #shootingArea > div:nth-child(3) > div > div > label,
+#bc3-1:checked ~ #bullets div > div:nth-child(3) > span:nth-child(3) {
+  display: none;
+}
+
+#bc3-1:checked ~ #shootingArea > div:nth-child(3) > div > div > span {
+  display: block;
+}
+
+#bc3-2:checked ~ #shootingArea > div:nth-child(3) > div > label:nth-child(2),
+#bc3-2:checked ~ #bullets div > div:nth-child(3) > span:nth-child(2) {
+  display: none;
+}
+
+#bc3-3:checked ~ #shootingArea > div:nth-child(3) > div > label:nth-child(3),
+#bc3-3:checked ~ #bullets div > div:nth-child(3) > span:nth-child(1) {
+  display: none;
+}
+
+#shootingArea > div:nth-child(3) > div > div {
+  position: absolute;
+  left: -100px;
+  top: 0;
+  width: 70px;
+  height: 76px;
+}
+
+#d3:checked ~ #points .pts3 {
+  left: -142px;
+}
+
+#d3:checked ~ #shootingArea > div:nth-child(3) label {
+  display: none;
+}
+
+#d3:checked ~ #shootingArea > div:nth-child(3) > div > div > span {
+  animation: duckFall 500ms linear forwards;
+  background-position: -65px -460px;
+  display: block;
+}
+
+#d3:checked ~ #shootingArea > div:nth-child(3) > div > div {
+  animation-play-state: paused;
+}
+
+#d3:checked ~ #dogLaugh > div:nth-child(3) > span:nth-child(1) {
+  display: none;
+}
+
+#d3:checked ~ #dogLaugh > div:nth-child(3) > span:nth-child(2) {
+  display: block;
+}
+
+#d3:checked ~ #hits > div > span:nth-child(3) {
+  background-position: -25px -557px;
+}
+
+#bc4-1:checked ~ #shootingArea > div:nth-child(4) > div > label:nth-child(1),
+#bc4-1:checked ~ #shootingArea > div:nth-child(4) > div > div > label,
+#bc4-1:checked ~ #bullets div > div:nth-child(4) > span:nth-child(3) {
+  display: none;
+}
+
+#bc4-1:checked ~ #shootingArea > div:nth-child(4) > div > div > span {
+  display: block;
+}
+
+#bc4-2:checked ~ #shootingArea > div:nth-child(4) > div > label:nth-child(2),
+#bc4-2:checked ~ #bullets div > div:nth-child(4) > span:nth-child(2) {
+  display: none;
+}
+
+#bc4-3:checked ~ #shootingArea > div:nth-child(4) > div > label:nth-child(3),
+#bc4-3:checked ~ #bullets div > div:nth-child(4) > span:nth-child(1) {
+  display: none;
+}
+
+#shootingArea > div:nth-child(4) > div > div {
+  position: absolute;
+  left: -100px;
+  top: 0;
+  width: 70px;
+  height: 76px;
+}
+
+#d4:checked ~ #points .pts4 {
+  left: -142px;
+}
+
+#d4:checked ~ #shootingArea > div:nth-child(4) label {
+  display: none;
+}
+
+#d4:checked ~ #shootingArea > div:nth-child(4) > div > div > span {
+  animation: duckFall 500ms linear forwards;
+  background-position: -65px -460px;
+  display: block;
+}
+
+#d4:checked ~ #shootingArea > div:nth-child(4) > div > div {
+  animation-play-state: paused;
+}
+
+#d4:checked ~ #dogLaugh > div:nth-child(4) > span:nth-child(1) {
+  display: none;
+}
+
+#d4:checked ~ #dogLaugh > div:nth-child(4) > span:nth-child(2) {
+  display: block;
+}
+
+#d4:checked ~ #hits > div > span:nth-child(4) {
+  background-position: -25px -557px;
+}
+
+#bc5-1:checked ~ #shootingArea > div:nth-child(5) > div > label:nth-child(1),
+#bc5-1:checked ~ #shootingArea > div:nth-child(5) > div > div > label,
+#bc5-1:checked ~ #bullets div > div:nth-child(5) > span:nth-child(3) {
+  display: none;
+}
+
+#bc5-1:checked ~ #shootingArea > div:nth-child(5) > div > div > span {
+  display: block;
+}
+
+#bc5-2:checked ~ #shootingArea > div:nth-child(5) > div > label:nth-child(2),
+#bc5-2:checked ~ #bullets div > div:nth-child(5) > span:nth-child(2) {
+  display: none;
+}
+
+#bc5-3:checked ~ #shootingArea > div:nth-child(5) > div > label:nth-child(3),
+#bc5-3:checked ~ #bullets div > div:nth-child(5) > span:nth-child(1) {
+  display: none;
+}
+
+#shootingArea > div:nth-child(5) > div > div {
+  position: absolute;
+  left: -100px;
+  top: 0;
+  width: 70px;
+  height: 76px;
+}
+
+#d5:checked ~ #points .pts5 {
+  left: -142px;
+}
+
+#d5:checked ~ #shootingArea > div:nth-child(5) label {
+  display: none;
+}
+
+#d5:checked ~ #shootingArea > div:nth-child(5) > div > div > span {
+  animation: duckFall 500ms linear forwards;
+  background-position: -65px -460px;
+  display: block;
+}
+
+#d5:checked ~ #shootingArea > div:nth-child(5) > div > div {
+  animation-play-state: paused;
+}
+
+#d5:checked ~ #dogLaugh > div:nth-child(5) > span:nth-child(1) {
+  display: none;
+}
+
+#d5:checked ~ #dogLaugh > div:nth-child(5) > span:nth-child(2) {
+  display: block;
+}
+
+#d5:checked ~ #hits > div > span:nth-child(5) {
+  background-position: -25px -557px;
+}
+
+#bc6-1:checked ~ #shootingArea > div:nth-child(6) > div > label:nth-child(1),
+#bc6-1:checked ~ #shootingArea > div:nth-child(6) > div > div > label,
+#bc6-1:checked ~ #bullets div > div:nth-child(6) > span:nth-child(3) {
+  display: none;
+}
+
+#bc6-1:checked ~ #shootingArea > div:nth-child(6) > div > div > span {
+  display: block;
+}
+
+#bc6-2:checked ~ #shootingArea > div:nth-child(6) > div > label:nth-child(2),
+#bc6-2:checked ~ #bullets div > div:nth-child(6) > span:nth-child(2) {
+  display: none;
+}
+
+#bc6-3:checked ~ #shootingArea > div:nth-child(6) > div > label:nth-child(3),
+#bc6-3:checked ~ #bullets div > div:nth-child(6) > span:nth-child(1) {
+  display: none;
+}
+
+#shootingArea > div:nth-child(6) > div > div {
+  position: absolute;
+  left: -100px;
+  top: 0;
+  width: 70px;
+  height: 76px;
+}
+
+#d6:checked ~ #points .pts6 {
+  left: -142px;
+}
+
+#d6:checked ~ #shootingArea > div:nth-child(6) label {
+  display: none;
+}
+
+#d6:checked ~ #shootingArea > div:nth-child(6) > div > div > span {
+  animation: duckFall 500ms linear forwards;
+  background-position: -65px -460px;
+  display: block;
+}
+
+#d6:checked ~ #shootingArea > div:nth-child(6) > div > div {
+  animation-play-state: paused;
+}
+
+#d6:checked ~ #dogLaugh > div:nth-child(6) > span:nth-child(1) {
+  display: none;
+}
+
+#d6:checked ~ #dogLaugh > div:nth-child(6) > span:nth-child(2) {
+  display: block;
+}
+
+#d6:checked ~ #hits > div > span:nth-child(6) {
+  background-position: -25px -557px;
+}
+
+#bc7-1:checked ~ #shootingArea > div:nth-child(7) > div > label:nth-child(1),
+#bc7-1:checked ~ #shootingArea > div:nth-child(7) > div > div > label,
+#bc7-1:checked ~ #bullets div > div:nth-child(7) > span:nth-child(3) {
+  display: none;
+}
+
+#bc7-1:checked ~ #shootingArea > div:nth-child(7) > div > div > span {
+  display: block;
+}
+
+#bc7-2:checked ~ #shootingArea > div:nth-child(7) > div > label:nth-child(2),
+#bc7-2:checked ~ #bullets div > div:nth-child(7) > span:nth-child(2) {
+  display: none;
+}
+
+#bc7-3:checked ~ #shootingArea > div:nth-child(7) > div > label:nth-child(3),
+#bc7-3:checked ~ #bullets div > div:nth-child(7) > span:nth-child(1) {
+  display: none;
+}
+
+#shootingArea > div:nth-child(7) > div > div {
+  position: absolute;
+  left: -100px;
+  top: 0;
+  width: 70px;
+  height: 76px;
+}
+
+#d7:checked ~ #points .pts7 {
+  left: -142px;
+}
+
+#d7:checked ~ #shootingArea > div:nth-child(7) label {
+  display: none;
+}
+
+#d7:checked ~ #shootingArea > div:nth-child(7) > div > div > span {
+  animation: duckFall 500ms linear forwards;
+  background-position: -65px -460px;
+  display: block;
+}
+
+#d7:checked ~ #shootingArea > div:nth-child(7) > div > div {
+  animation-play-state: paused;
+}
+
+#d7:checked ~ #dogLaugh > div:nth-child(7) > span:nth-child(1) {
+  display: none;
+}
+
+#d7:checked ~ #dogLaugh > div:nth-child(7) > span:nth-child(2) {
+  display: block;
+}
+
+#d7:checked ~ #hits > div > span:nth-child(7) {
+  background-position: -25px -557px;
+}
+
+#bc8-1:checked ~ #shootingArea > div:nth-child(8) > div > label:nth-child(1),
+#bc8-1:checked ~ #shootingArea > div:nth-child(8) > div > div > label,
+#bc8-1:checked ~ #bullets div > div:nth-child(8) > span:nth-child(3) {
+  display: none;
+}
+
+#bc8-1:checked ~ #shootingArea > div:nth-child(8) > div > div > span {
+  display: block;
+}
+
+#bc8-2:checked ~ #shootingArea > div:nth-child(8) > div > label:nth-child(2),
+#bc8-2:checked ~ #bullets div > div:nth-child(8) > span:nth-child(2) {
+  display: none;
+}
+
+#bc8-3:checked ~ #shootingArea > div:nth-child(8) > div > label:nth-child(3),
+#bc8-3:checked ~ #bullets div > div:nth-child(8) > span:nth-child(1) {
+  display: none;
+}
+
+#shootingArea > div:nth-child(8) > div > div {
+  position: absolute;
+  left: -100px;
+  top: 0;
+  width: 70px;
+  height: 76px;
+}
+
+#d8:checked ~ #points .pts8 {
+  left: -142px;
+}
+
+#d8:checked ~ #shootingArea > div:nth-child(8) label {
+  display: none;
+}
+
+#d8:checked ~ #shootingArea > div:nth-child(8) > div > div > span {
+  animation: duckFall 500ms linear forwards;
+  background-position: -65px -460px;
+  display: block;
+}
+
+#d8:checked ~ #shootingArea > div:nth-child(8) > div > div {
+  animation-play-state: paused;
+}
+
+#d8:checked ~ #dogLaugh > div:nth-child(8) > span:nth-child(1) {
+  display: none;
+}
+
+#d8:checked ~ #dogLaugh > div:nth-child(8) > span:nth-child(2) {
+  display: block;
+}
+
+#d8:checked ~ #hits > div > span:nth-child(8) {
+  background-position: -25px -557px;
+}
+
+#bc9-1:checked ~ #shootingArea > div:nth-child(9) > div > label:nth-child(1),
+#bc9-1:checked ~ #shootingArea > div:nth-child(9) > div > div > label,
+#bc9-1:checked ~ #bullets div > div:nth-child(9) > span:nth-child(3) {
+  display: none;
+}
+
+#bc9-1:checked ~ #shootingArea > div:nth-child(9) > div > div > span {
+  display: block;
+}
+
+#bc9-2:checked ~ #shootingArea > div:nth-child(9) > div > label:nth-child(2),
+#bc9-2:checked ~ #bullets div > div:nth-child(9) > span:nth-child(2) {
+  display: none;
+}
+
+#bc9-3:checked ~ #shootingArea > div:nth-child(9) > div > label:nth-child(3),
+#bc9-3:checked ~ #bullets div > div:nth-child(9) > span:nth-child(1) {
+  display: none;
+}
+
+#shootingArea > div:nth-child(9) > div > div {
+  position: absolute;
+  left: -100px;
+  top: 0;
+  width: 70px;
+  height: 76px;
+}
+
+#d9:checked ~ #points .pts9 {
+  left: -142px;
+}
+
+#d9:checked ~ #shootingArea > div:nth-child(9) label {
+  display: none;
+}
+
+#d9:checked ~ #shootingArea > div:nth-child(9) > div > div > span {
+  animation: duckFall 500ms linear forwards;
+  background-position: -65px -460px;
+  display: block;
+}
+
+#d9:checked ~ #shootingArea > div:nth-child(9) > div > div {
+  animation-play-state: paused;
+}
+
+#d9:checked ~ #dogLaugh > div:nth-child(9) > span:nth-child(1) {
+  display: none;
+}
+
+#d9:checked ~ #dogLaugh > div:nth-child(9) > span:nth-child(2) {
+  display: block;
+}
+
+#d9:checked ~ #hits > div > span:nth-child(9) {
+  background-position: -25px -557px;
+}
+
+#bc10-1:checked ~ #shootingArea > div:nth-child(10) > div > label:nth-child(1),
+#bc10-1:checked ~ #shootingArea > div:nth-child(10) > div > div > label,
+#bc10-1:checked ~ #bullets div > div:nth-child(10) > span:nth-child(3) {
+  display: none;
+}
+
+#bc10-1:checked ~ #shootingArea > div:nth-child(10) > div > div > span {
+  display: block;
+}
+
+#bc10-2:checked ~ #shootingArea > div:nth-child(10) > div > label:nth-child(2),
+#bc10-2:checked ~ #bullets div > div:nth-child(10) > span:nth-child(2) {
+  display: none;
+}
+
+#bc10-3:checked ~ #shootingArea > div:nth-child(10) > div > label:nth-child(3),
+#bc10-3:checked ~ #bullets div > div:nth-child(10) > span:nth-child(1) {
+  display: none;
+}
+
+#shootingArea > div:nth-child(10) > div > div {
+  position: absolute;
+  left: -100px;
+  top: 0;
+  width: 70px;
+  height: 76px;
+}
+
+#d10:checked ~ #points .pts10 {
+  left: -142px;
+}
+
+#d10:checked ~ #shootingArea > div:nth-child(10) label {
+  display: none;
+}
+
+#d10:checked ~ #shootingArea > div:nth-child(10) > div > div > span {
+  animation: duckFall 500ms linear forwards;
+  background-position: -65px -460px;
+  display: block;
+}
+
+#d10:checked ~ #shootingArea > div:nth-child(10) > div > div {
+  animation-play-state: paused;
+}
+
+#d10:checked ~ #dogLaugh > div:nth-child(10) > span:nth-child(1) {
+  display: none;
+}
+
+#d10:checked ~ #dogLaugh > div:nth-child(10) > span:nth-child(2) {
+  display: block;
+}
+
+#d10:checked ~ #hits > div > span:nth-child(10) {
+  background-position: -25px -557px;
+}
+
+#dogIntro {
+  animation: dogMove 2.8s linear forwards, dogWalk 4s step-start 1 forwards;
+}
+
+#shootingArea > div:nth-child(1),
+#bullets > div > div:nth-child(1) {
+  animation: lvlStart 1ms steps(1) 5s forwards, lvlEnd 1ms steps(1) 14s forwards;
+}
+
+#shootingArea > div:nth-child(1) > div > div {
+  animation: duck1 5s linear 5s forwards;
+}
+
+#dogLaugh > div:nth-child(1) {
+  animation: dogShow 4s;
+}
+
+#shootingArea > div:nth-child(2),
+#bullets > div > div:nth-child(2) {
+  animation: lvlStart 1ms steps(1) 14s forwards, lvlEnd 1ms steps(1) 23s forwards;
+}
+
+#shootingArea > div:nth-child(2) > div > div {
+  animation: duck2 5s linear 14s forwards;
+}
+
+#dogLaugh > div:nth-child(2) {
+  animation: dogShow 4s;
+}
+
+#shootingArea > div:nth-child(3),
+#bullets > div > div:nth-child(3) {
+  animation: lvlStart 1ms steps(1) 23s forwards, lvlEnd 1ms steps(1) 32s forwards;
+}
+
+#shootingArea > div:nth-child(3) > div > div {
+  animation: duck3 5s linear 23s forwards;
+}
+
+#dogLaugh > div:nth-child(3) {
+  animation: dogShow 4s;
+}
+
+#shootingArea > div:nth-child(4),
+#bullets > div > div:nth-child(4) {
+  animation: lvlStart 1ms steps(1) 32s forwards, lvlEnd 1ms steps(1) 41s forwards;
+}
+
+#shootingArea > div:nth-child(4) > div > div {
+  animation: duck4 5s linear 32s forwards;
+}
+
+#dogLaugh > div:nth-child(4) {
+  animation: dogShow 4s;
+}
+
+#shootingArea > div:nth-child(5),
+#bullets > div > div:nth-child(5) {
+  animation: lvlStart 1ms steps(1) 41s forwards, lvlEnd 1ms steps(1) 50s forwards;
+}
+
+#shootingArea > div:nth-child(5) > div > div {
+  animation: duck5 5s linear 41s forwards;
+}
+
+#dogLaugh > div:nth-child(5) {
+  animation: dogShow 4s;
+}
+
+#shootingArea > div:nth-child(6),
+#bullets > div > div:nth-child(6) {
+  animation: lvlStart 1ms steps(1) 50s forwards, lvlEnd 1ms steps(1) 59s forwards;
+}
+
+#shootingArea > div:nth-child(6) > div > div {
+  animation: duck6 5s linear 50s forwards;
+}
+
+#dogLaugh > div:nth-child(6) {
+  animation: dogShow 4s;
+}
+
+#shootingArea > div:nth-child(7),
+#bullets > div > div:nth-child(7) {
+  animation: lvlStart 1ms steps(1) 59s forwards, lvlEnd 1ms steps(1) 68s forwards;
+}
+
+#shootingArea > div:nth-child(7) > div > div {
+  animation: duck7 5s linear 59s forwards;
+}
+
+#dogLaugh > div:nth-child(7) {
+  animation: dogShow 4s;
+}
+
+#shootingArea > div:nth-child(8),
+#bullets > div > div:nth-child(8) {
+  animation: lvlStart 1ms steps(1) 68s forwards, lvlEnd 1ms steps(1) 77s forwards;
+}
+
+#shootingArea > div:nth-child(8) > div > div {
+  animation: duck8 5s linear 68s forwards;
+}
+
+#dogLaugh > div:nth-child(8) {
+  animation: dogShow 4s;
+}
+
+#shootingArea > div:nth-child(9),
+#bullets > div > div:nth-child(9) {
+  animation: lvlStart 1ms steps(1) 77s forwards, lvlEnd 1ms steps(1) 86s forwards;
+}
+
+#shootingArea > div:nth-child(9) > div > div {
+  animation: duck9 5s linear 77s forwards;
+}
+
+#dogLaugh > div:nth-child(9) {
+  animation: dogShow 4s;
+}
+
+#shootingArea > div:nth-child(10),
+#bullets > div > div:nth-child(10) {
+  animation: lvlStart 1ms steps(1) 86s forwards, lvlEnd 1ms steps(1) 95s forwards;
+}
+
+#shootingArea > div:nth-child(10) > div > div {
+  animation: duck10 5s linear 86s forwards;
+}
+
+#dogLaugh > div:nth-child(10) {
+  animation: dogShow 4s;
 }

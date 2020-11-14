@@ -100,6 +100,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var handtrackjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! handtrackjs */ "./node_modules/handtrackjs/src/index.js");
 /* harmony import */ var _server_uckHunt__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../server/*uckHunt */ "./server/*uckHunt.js");
+/* harmony import */ var _DogIntro__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./DogIntro */ "./client/components/DogIntro.js");
+/* harmony import */ var _DogLaugh__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./DogLaugh */ "./client/components/DogLaugh.js");
+
+
 
 
 
@@ -112,18 +116,20 @@ const modelParams = {
   // ioU threshold for non-max suppression
   scoreThreshold: 0.6 // confidence threshold for predictions.
 
-}; // fist is off from bounding box - i may not be able to put the width on state
-// fist should not appear in beginning
+}; //awkward when bird is created (initial flight)
+// animation needs to be faster and smoother
 // bird explode
-// do dog and grass
-//awkward when bird is created (initial flight)
+// sound bite of them going down
+// dog needs to go after game starts
 // set favicon
-// dictator heads
-// logo
+// dictator heads - add more
+//scoreboard
+// fix dog position
+// sound
 // levels: speed, fist size, frequency of new target created
 // 2 fists - xtra credit
 
-const nTargets = 3; // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
+const nTargets = 5; // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
 
 const gameSpeed = 500; // later refactor on child component Options state
 
@@ -140,7 +146,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     super(props);
     this.state = {
       isVideo: false,
-      message: "loading model...",
+      message: "",
       coordinates: [],
       errorMargin: 100,
       nTargets: nTargets,
@@ -150,11 +156,13 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       inPlay: false,
       targets: [],
       fistWidth: '150px',
-      fistHeight: '116px'
+      fistHeight: '116px',
+      selectedTarget: ''
     };
     this.targets = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
     this.screen = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
     this.fist = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
+    this.setSelectedTarget = this.setSelectedTarget.bind(this);
     this.startVideo = this.startVideo.bind(this);
     this.toggleVideo = this.toggleVideo.bind(this);
     this.runDetection = this.runDetection.bind(this);
@@ -162,6 +170,13 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     this.startGame = this.startGame.bind(this);
     this.addTarget = this.addTarget.bind(this);
     this.determineHit = this.determineHit.bind(this);
+  }
+
+  setSelectedTarget(selectedTarget) {
+    console.log(selectedTarget);
+    this.setState({
+      selectedTarget
+    });
   }
 
   async startVideo() {
@@ -198,18 +213,12 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
   runDetection() {
     model.detect(video).then(predictions => {
       // console.log("Predictions: ", predictions);
-      model.renderPredictions(predictions, canvas, context, video); //predictions[0]: [ x, y, width, height ]
+      model.renderPredictions(predictions, canvas, context, video); // predictions[0]: [ x, y, width, height ]
 
       if (predictions[0]) {
-        const [x, y, width, height] = predictions[0].bbox; // console.log(x, y, width, height)
-
-        const [xAdj, yAdj, widthAdj, heightAdj] = this.adjustPos(x, y, width, height); // console.log('before:', x, y, width, height)
-        // console.log('after:', xAdj, yAdj, widthAdj, heightAdj)
-
-        const fistPos = this.fist.current.getBoundingClientRect(); // this.fist.current.style.left = xAdj + widthAdj / 2  - fistPos.width/2
-        // this.fist.current.style.top = yAdj + heightAdj /2 - fistPos.height/2
-
-        console.log(fistPos);
+        const [x, y, width, height] = predictions[0].bbox;
+        const [xAdj, yAdj, widthAdj, heightAdj] = this.adjustPos(x, y, width, height);
+        const fistPos = this.fist.current.getBoundingClientRect();
         $(".fist").animate({
           left: xAdj + widthAdj / 2 - fistPos.width / 2,
           top: yAdj + heightAdj / 2 - fistPos.height / 2
@@ -231,8 +240,7 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
 
 
   adjustPos(x, y, width, height) {
-    console.log('screenwidth', this.screen.current.clientWidth, 'screenheight', this.screen.current.clientHeight);
-    console.log('vidwidth', video.width, 'vidheight', video.height);
+    // console.log('screenwidth', this.screen.current.clientWidth, 'screenheight', this.screen.current.clientHeight);console.log('vidwidth',video.width, 'vidheight', video.height);
     const widthAdjustment = this.screen.current.clientWidth / video.width;
     const heightAdjustment = this.screen.current.clientHeight / video.height;
     const xAdj = x * widthAdjustment;
@@ -262,58 +270,59 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     const directions = ['left', 'right'];
     const targetDirection = directions[Math.floor(Math.random() * directions.length)];
     const initialPos = Math.floor(this.screen.current.clientWidth * Math.random());
-    $('#targets').append(`<div class="target ${targetDirection}" style="${targetDirection}: ${initialPos}px"></div>`);
+    console.log(targetDirection, initialPos);
+    $('#targets').append(`<div class="target ${targetDirection}" style="${targetDirection}: ${initialPos}px; bottom: ${this.screen.current.clientHeight * .2}px; background-image: url('/images/${this.state.selectedTarget}.png')"></div>`);
   }
 
   async startGame() {
-    console.log('starting game');
-    this.setState({
-      inPlay: true
-    }); // DO NOT DELETE BELOW if commented out!!!!!!!!!!
+    if (!this.state.selectedTarget.length) this.setState({
+      message: "Please select a *uck"
+    });else {
+      console.log('starting game');
+      this.setState({
+        message: 'PLEASE WAIT...',
+        score: 0,
+        result: ''
+      }); // DO NOT DELETE BELOW if commented out!!!!!!!!!!
 
-    const [videoStatus, lmodel] = await Promise.all([this.startVideo(), handtrackjs__WEBPACK_IMPORTED_MODULE_1__["load"](modelParams)]);
-    model = lmodel;
-    console.log('model loaded');
-    this.runDetection();
-    this.setState({
-      message: 'model loaded'
-    });
-    setInterval(_server_uckHunt__WEBPACK_IMPORTED_MODULE_2__["default"], this.state.gameSpeed); // defining "self" becuase cant access state inside setInterval
+      const [videoStatus, lmodel] = await Promise.all([this.startVideo(), handtrackjs__WEBPACK_IMPORTED_MODULE_1__["load"](modelParams)]);
+      model = lmodel;
+      console.log('model loaded');
+      this.runDetection();
+      this.setState({
+        message: 'READY',
+        inPlay: true
+      });
+      setInterval(_server_uckHunt__WEBPACK_IMPORTED_MODULE_2__["default"], this.state.gameSpeed); // defining "self" becuase cant access state inside setInterval
 
-    const self = this;
-    let nTargets = this.state.nTargets;
-    let createdTargets = 0;
-    const createTargets = setInterval(function () {
-      if (createdTargets < nTargets) {
-        self.addTarget();
-        createdTargets++;
-      }
-
-      if (self.checkGameEnd() && createdTargets === nTargets) {
-        if (self.state.score / self.state.nTargets >= .6) {
-          self.setState({
-            result: 'YOU WIN'
-          });
-        } else {
-          self.setState({
-            result: 'YOU LOSE'
-          });
+      const self = this;
+      let nTargets = this.state.nTargets;
+      let createdTargets = 0;
+      const createTargets = setInterval(function () {
+        if (createdTargets < nTargets) {
+          self.addTarget();
+          createdTargets++;
         }
 
-        clearInterval(createTargets);
-      }
-    }, 5000);
-  }
+        if (self.checkGameEnd() && createdTargets === nTargets) {
+          if (self.state.score / self.state.nTargets >= .6) {
+            self.setState({
+              result: 'YOU WIN'
+            });
+          } else {
+            self.setState({
+              result: 'YOU LOSE'
+            });
+          }
 
-  result() {
-    if (self.state.score / self.state.nTargets >= .6) {
-      self.setState({
-        result: 'YOU WIN'
-      });
-    } else {
-      self.setState({
-        result: 'YOU LOSE'
-      });
+          self.setState({
+            inPlay: false,
+            selectedTarget: '',
+            message: 'PLAY AGAIN?'
+          });
+          clearInterval(createTargets);
+        }
+      }, 5000);
     }
   }
 
@@ -335,8 +344,6 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       ref: this.screen,
       id: "screen"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      className: "title"
-    }, "Duck Hunt!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "score"
     }, "Score: ", this.state.score, " / ", this.state.nTargets), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
       className: "fist",
@@ -344,27 +351,98 @@ class App extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       ref: this.fist,
       style: {
         width: this.state.fistWidth,
-        height: this.state.fistHeight
+        height: this.state.fistHeight,
+        display: !this.state.inPlay ? 'none' : 'inline'
       }
     }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       id: "targets",
       ref: this.targets
     }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", {
       className: "result"
-    }, this.state.result), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    }, this.state.result), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      id: "setup",
+      style: {
+        display: !this.state.inPlay ? 'flex' : 'none'
+      }
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
+      src: "/images/logo.png",
+      id: "logo"
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h2", null, "Welcome! Choose a *uck:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      id: "target-options"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "target-option-div"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", {
+      className: "target-name"
+    }, "TRUMP"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
+      onClick: () => this.setSelectedTarget('trump'),
+      className: this.state.selectedTarget === 'trump' ? 'target-option selected' : 'target-option',
+      src: "/images/trumpface.png"
+    })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "target-option-div"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", {
+      className: "target-name"
+    }, "HITLER"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
+      onClick: () => this.setSelectedTarget('hitler'),
+      className: this.state.selectedTarget === 'hitler' ? 'target-option selected' : 'target-option',
+      src: "/images/hitlerface.png"
+    }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      id: "play-buttons"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      id: "updatenote",
+      className: "updatenote mt10"
+    }, this.state.message), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+      id: "start-game",
+      onClick: this.startGame
+    }, "PLAY"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
       onClick: this.toggleVideo,
       id: "trackbutton",
       className: "bx--btn bx--btn--secondary",
       type: "button"
-    }, "Toggle Video"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
-      id: "start-game",
-      onClick: this.startGame
-    }, "Start Game"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-      id: "updatenote",
-      className: "updatenote mt10"
-    }, this.state.message)));
+    }, "Toggle Video"))), this.state.inPlay === true ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_DogIntro__WEBPACK_IMPORTED_MODULE_3__["default"], null) : null, this.state.result === 'YOU LOSE' ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_DogLaugh__WEBPACK_IMPORTED_MODULE_4__["default"], null) : null));
   }
 
+}
+
+/***/ }),
+
+/***/ "./client/components/DogIntro.js":
+/*!***************************************!*\
+  !*** ./client/components/DogIntro.js ***!
+  \***************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return DogIntro; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+function DogIntro() {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    id: "dogIntro"
+  }));
+}
+
+/***/ }),
+
+/***/ "./client/components/DogLaugh.js":
+/*!***************************************!*\
+  !*** ./client/components/DogLaugh.js ***!
+  \***************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return DogLaugh; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+function DogLaugh() {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    id: "dogLaugh"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null)));
 }
 
 /***/ }),
@@ -89154,9 +89232,9 @@ function step() {
   $('.target.left').each(function (i, target) {
     target = $(target);
     target.animate({
-      left: '-=100',
-      top: '-=50'
-    }, 1); //   target.css({
+      left: '-=200',
+      top: '-=70'
+    }, 100); //   target.css({
     //     'left': target.offset().left - 50,
     //     'top': target.offset().top - 10,
     // });
@@ -89165,9 +89243,9 @@ function step() {
   $('.target.right').each(function (i, target) {
     target = $(target);
     target.animate({
-      left: '+=100',
-      top: '-=50'
-    }, 1); // target.css({
+      left: '+=200',
+      top: '-=70'
+    }, 100); // target.css({
     //   'left': target.offset().left + 50,
     //   'top': target.offset().top -10,
     // });
