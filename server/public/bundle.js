@@ -123,7 +123,7 @@ const modelParams = {
 // levels: speed, fist size, frequency of new target created
 //scoreboard
 
-const nTargets = 5; // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
+const nTargets = 10; // later refactor on child component Options state (on click on child component with function passed in from App that will set state)
 
 const gameSpeed = 500; // later refactor on child component Options state
 
@@ -89275,7 +89275,7 @@ function step() {
     target.animate({
       left: '-=200',
       top: '-=70'
-    }, 100); //   target.css({
+    }, 1); //   target.css({
     //     'left': target.offset().left - 50,
     //     'top': target.offset().top - 10,
     // });

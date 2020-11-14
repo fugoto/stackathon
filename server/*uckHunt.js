@@ -59,7 +59,7 @@ export default function step() {
     target.animate({
       left: '-=200',
       top: '-=70'
-    }, 100)
+    }, 1)
   //   target.css({
   //     'left': target.offset().left - 50,
   //     'top': target.offset().top - 10,
