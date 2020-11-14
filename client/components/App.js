@@ -3,6 +3,7 @@ import * as handTrack from 'handtrackjs';
 import step from '../../server/*uckHunt'
 import DogIntro from './DogIntro'
 import DogLaugh from './DogLaugh'
+import DogWin from './DogWin'
 
 const modelParams = {
     flipHorizontal: true,   // flip e.g for video  
@@ -10,17 +11,12 @@ const modelParams = {
     iouThreshold: 0.5,      // ioU threshold for non-max suppression
     scoreThreshold: 0.6,    // confidence threshold for predictions.
 }
-// position of result message
-// center update msg
-// toggle video button
 // animation needs to be faster and smoother - game needs to be harder. make fist width smaller?
 
 // bird explode. // sound bite of them going down
-// dictator heads - add more
 // levels: speed, fist size, frequency of new target created
 
 // win dog
-// also set inplay to false after a 5 sec timeout
 // set favicon
 //scoreboard
 // fix dog position
@@ -31,12 +27,9 @@ let model = null
 const video = document.getElementById("myvideo");
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
-let targets = document.querySelectorAll(".target");
-
 // let targets = document.querySelectorAll(".target");
-
-let trackButton = document.getElementById("trackbutton");
-let updateNote = document.getElementById("updatenote");
+// let trackButton = document.getElementById("trackbutton");
+// let updateNote = document.getElementById("updatenote");
 
 export default class App extends React.Component {
 	constructor(props) {
@@ -194,12 +187,7 @@ export default class App extends React.Component {
 			}, 3000)
 		}
 	}
-	// resetGame(){
-	// 	setTimeout (() => {
-	// 		this.setState({ inPlay: false, selectedTarget: '', message: 'PLAY AGAIN?' }), 5000 }
-	// 	)
-	// }
-
+	
 	checkGameEnd(){
 		let targets = document.querySelectorAll(".target");
 			if(!targets.length) return false
@@ -260,6 +248,7 @@ export default class App extends React.Component {
 				</div>
 				{ this.state.inPlay === true ? <DogIntro></DogIntro> : null }
 				{ this.state.result === 'YOU LOSE' ? <DogLaugh></DogLaugh> : null}
+				{ this.state.result === 'YOU WIN' ? <DogWin></DogWin> : null}
 			</div>
 		  </>
 		)

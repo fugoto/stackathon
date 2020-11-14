@@ -288,6 +288,12 @@ body {
     50% { background-position:-480px -110px; }
     100% { background-position:-360px -110px; }
   }
+
+  @keyframes dogWin {
+    0% { background-position:-600px -110px; }
+    50% { background-position:-600px -110px; }
+    100% { background-position:-600px -110px; }
+  }
   
   @keyframes dogShow {
     0% { top:560px; }
@@ -514,6 +520,39 @@ body {
       }
     }
   }
+
+  #dogWin {
+    width:1280px;
+    height:570px;
+    overflow:hidden;
+    position:absolute;
+    top:0;
+    left:0;
+  
+    & > div {
+      position:absolute;
+      top:560px;
+      left:560px;	
+  
+      & > span {
+        width: 150px; 
+        height: 100px;	
+      }
+  
+      & > span:nth-child(1) {
+        display:block;
+        background: url('/images/dogonly.png') no-repeat;
+    
+        animation: dogWin 200ms infinite steps(1) alternate;
+      }
+  
+      & > span:nth-child(2) {
+        display:none;
+        background: url('/images/dogonly.png') no-repeat;
+        background-position:-600px -0px;
+      }
+    }
+  }
   
   @for $i from 1 through 10 {
     #bc#{$i}-1:checked ~ #shootingArea > div:nth-child(#{$i}) > div > label:nth-child(1), 
@@ -588,6 +627,10 @@ body {
     }
   
     #dogLaugh > div:nth-child(#{$i}) {
+      animation: dogShow 4s;
+    }
+
+    #dogWin > div:nth-child(#{$i}) {
       animation: dogShow 4s;
     }
     // #{10 + (($i - 1) * 9)}s
